@@ -1,0 +1,10 @@
+[
+    {"name": "game1", "displayName": "ClickBox", "hasWon": false},
+    {"name": "game2", "displayName": "Text box", "hasWon": false},
+    {"name": "game3", "displayName": "Test 3", "hasWon": false},
+    {"name": "game4", "displayName": "Test 4", "hasWon": false},
+    {"name": "game5", "displayName": "Test 5", "hasWon": false},
+    {"name": "game6", "displayName": "Test 6", "hasWon": false},
+    {"name": "game7", "displayName": "Test 7", "hasWon": false},
+    {"name": "game8", "displayName": "Test 8", "hasWon": false}
+]

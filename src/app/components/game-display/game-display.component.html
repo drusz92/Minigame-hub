@@ -1,0 +1,15 @@
+<h2 class="display-title">{{ currentGameDisplayName }}</h2>
+<div class="large-box" [ngStyle]="{'background-color': hasWon ? 'darkgreen' : 'white'}" *ngIf="game">
+    <div *ngIf="hasWon" class="game-won-container">
+        <div>VICTORY</div>
+        <button (click)="redoGame()">Play Again</button>
+    </div>
+      <div *ngIf="!hasWon">
+        <div *ngIf="game.name === 'game1'">
+            <app-game1></app-game1>
+          </div>
+          <div *ngIf="game.name === 'game2'">
+            <app-game2></app-game2>
+          </div>
+      </div> 
+  </div>

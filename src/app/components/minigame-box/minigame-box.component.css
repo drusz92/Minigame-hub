@@ -1,0 +1,14 @@
+.minigame-box {
+    width: 200px;
+    height: 100px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .minigame-box:hover {
+    background-color: #f5f5f5;
+  }

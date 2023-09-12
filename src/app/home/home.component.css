@@ -1,0 +1,33 @@
+.header{
+  text-align: center;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  font-size: 36px;
+  border-bottom: 5px solid #000000;
+  margin-bottom: 2%;
+  background-color: white;
+}
+
+ul{
+    padding-left: 0px;
+    text-align: center;
+  }
+
+li{
+  margin: 1.25%;
+  display: inline-block;
+  padding: 10px 10px;
+}
+
+button{
+  border-radius: 16px;
+  font-size: 28px;
+}
+
+.horizontal-bar {
+  height: 5px;          /* Adjust as per your preferred thickness */
+  background-color: black;
+  width: 100%;          /* This ensures the bar takes up the full width */
+  margin-top: 10px;     /* Optional: Add some spacing above the bar */
+  margin-bottom: 10px;  /* Optional: Add some spacing below the bar */
+}

@@ -1,0 +1,6 @@
+<div class="instructions-container">
+  Click The Green Box
+</div>
+<div class="game-container">
+  <div class="moving-box" *ngFor="let box of boxes" [ngStyle]="{'background-color': box.color}" (click)="box.color === 'darkgreen' ? win() : null"></div>
+</div>

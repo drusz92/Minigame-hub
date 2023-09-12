@@ -31,7 +31,7 @@ export class GameListComponent implements OnInit, OnDestroy {
   }
 
   loadGames() {
-    this.http.get<any[]>('/assets/games.json').subscribe((data: any[]) => {
+    this.http.get<any[]>('https://minigoats.github.io/Minigame-hub/assets/games.json').subscribe((data: any[]) => {
       this.games = data;
       this.games.forEach(game => {
         let hasWonCookie = this.cookieService.get(game.name + 'Won');

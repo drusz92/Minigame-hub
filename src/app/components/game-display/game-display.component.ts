@@ -23,7 +23,7 @@ export class GameDisplayComponent implements OnChanges {
 
   ngOnChanges(): void {  
     window.scrollTo(0, 0);
-    this.http.get<any[]>('/assets/games.json').subscribe((data: any[]) => {
+    this.http.get<any[]>('https://minigoats.github.io/Minigame-hub/assets/games.json').subscribe((data: any[]) => {
       const matchedGame = data.find((game: { name: any; }) => game.name === this.currentGameName);
       if (matchedGame) {
         this.currentGameDisplayName = matchedGame.displayName;

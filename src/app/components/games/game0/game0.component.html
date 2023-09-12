@@ -1,0 +1,8 @@
+<div *ngIf="!hasCookie" class="fortune-container">
+    <p>Click the taco for your daily fortune:</p>
+    <img src="assets/taco.jpg" alt="Fortune Teller's Orb" (click)="getDailyFortune()">
+ </div>
+
+ <div *ngIf="hasCookie" class="fortune-container">
+    <p>{{todaysFortune}}</p>
+ </div>

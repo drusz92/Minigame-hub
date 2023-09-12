@@ -1,5 +1,6 @@
 [
-    {"name": "game1", "displayName": "ClickBox", "hasWon": false},
+    {"name": "game0", "displayName": "Daily Fortune", "hasWon": false},
+    {"name": "game1", "displayName": "Click Box", "hasWon": false},
     {"name": "game2", "displayName": "Text box", "hasWon": false},
     {"name": "game3", "displayName": "Test 3", "hasWon": false},
     {"name": "game4", "displayName": "Test 4", "hasWon": false},

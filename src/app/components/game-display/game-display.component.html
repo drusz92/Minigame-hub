@@ -5,6 +5,9 @@
         <button (click)="redoGame()">Play Again</button>
     </div>
       <div *ngIf="!hasWon">
+        <div *ngIf="game.name === 'game0'">
+          <app-game0></app-game0>
+        </div>
         <div *ngIf="game.name === 'game1'">
             <app-game1></app-game1>
           </div>

@@ -14,6 +14,7 @@ import { GameListComponent } from './components/game-list/game-list.component';
 import { GameDisplayComponent } from './components/game-display/game-display.component';
 import { Game1Component } from './components/games/game1/game1.component';
 import { Game2Component } from './components/games/game2/game2.component';
+import { Game0Component } from './components/games/game0/game0.component';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { Game2Component } from './components/games/game2/game2.component';
     GameDisplayComponent,
     Game1Component,
     Game2Component,
+    Game0Component,
   ],
   providers: [
     CookieService

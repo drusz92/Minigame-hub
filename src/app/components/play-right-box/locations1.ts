@@ -1,4 +1,4 @@
-export const locations = [
+export const locations1 = [
     {
       name: "Pallet Town",
       minLevel: 1,
@@ -22,6 +22,6 @@ export const locations = [
     {
       name: "Pewter",
       minLevel: 10,
-      maxLevel: 13
+      maxLevel: 15
     },
 ];

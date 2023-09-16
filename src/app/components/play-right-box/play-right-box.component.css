@@ -35,6 +35,8 @@
     margin-top: 20px;
     max-height: 400px;  /* or any height that fits your design */
     width: 100%;  /* optional, adjust as needed */
+    position: relative;
+    z-index: 1; /* ensures it's above the vertical boxes */
 }
 
 .pokemon-container {
@@ -161,18 +163,46 @@
     display: flex;
 }
 
+.main-container {
+    position: relative;
+}
+
+.locations-container {
+    /* existing styles if any */
+    position: relative;
+    min-height: 300px;
+    z-index: 1; /* ensures it's above the vertical boxes */
+}
 
 .vertical-boxes {
     display: flex;
     flex-direction: column;
-    margin-right: 1rem; /* add space between the boxes and the locations-container */
+    position: absolute;
+    height: 100%;
+    right: -100px; /* Adjust this value according to your design */
+    top: 0;
 }
 
 .box {
-    width: 50px; /* or desired width */
-    height: 50px; /* or desired height */
-    background-color: red; /* or desired background-color */
-    margin-bottom: 1rem; /* add space between boxes */
+    width: 98px; /* increased by 40px */
+    height: 100%;
+    background-color:  #1976d2;
+    margin-bottom: 15px;
+    color: white;
+    text-align-last: center;
+    /* rounded corners on the right side */
+    border-top-right-radius: 5px; /* adjust the value to your preference */
+    border-bottom-right-radius: 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.zone-levels{
+    color: white;
+    font-size: 28px; /* adjust as needed */
 }
 
 /* If you don't want margin for the last box */

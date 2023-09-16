@@ -1,7 +1,15 @@
-<div *ngIf="!encounterInProgress" class="locations-container">
+<div class="main-container">
+    <div *ngIf="!encounterInProgress" class="locations-container">
     <div [ngClass]="{'highlight-button': enabled(location)}" *ngFor="let location of locations" class="location-box" (click)="generateEncounter(location)">
         <span class="min-level">{{ location.minLevel }} - {{location.maxLevel}}</span>
-        {{ location.name }}
+        {{ location.name }}       
+    </div>
+    <div class="vertical-boxes">
+        <div class="box" [style.backgroundColor]="isZoneLevel(1, 15) ? '#1976d2' : 'grey'" [style.border]="currentLocationName == 'location1' ? '3px solid gold' : 'none'" (click)="zone1()"><span class="zone-levels">1-15</span></div>
+        <div class="box" [style.backgroundColor]="isZoneLevel(12, 28) ? '#1976d2' : 'grey'" [style.border]="currentLocationName == 'location2' ? '3px solid gold' : 'none'" (click)="zone2()"><span class="zone-levels">12-28</span></div>
+        <div class="box" [style.backgroundColor]="isZoneLevel(26, 38) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location3' ? '3px solid gold' : 'none'" (click)="zone3()"><span class="zone-levels">26-38</span></div>
+        <div class="box" [style.backgroundColor]="isZoneLevel(36, 50) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location4' ? '3px solid gold' : 'none'" (click)="zone4()"><span class="zone-levels">36-50</span></div>
+        <div class="box" [style.backgroundColor]="isZoneLevel(50, 100) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location5' ? '3px solid gold' : 'none'" (click)="zone5()"><span class="zone-levels">50+</span></div>
     </div>
 </div>
 <div *ngIf="encounterInProgress">

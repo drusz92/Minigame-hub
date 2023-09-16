@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { UserService } from './services/user.service';
 
@@ -10,6 +10,7 @@ import { UserService } from './services/user.service';
 export class AppComponent implements OnInit {
   showLoginPopup: boolean = false;
   userName: string = '';
+
   constructor(private cookieService: CookieService, private userService: UserService) { 
   }
 
@@ -32,6 +33,7 @@ export class AppComponent implements OnInit {
     this.userService.saveUser(userId, name);
     this.showLoginPopup = false; 
     this.userService.setUserId(userId);
+    location.reload();
   }
 
   generateRandomString(length: number): string {

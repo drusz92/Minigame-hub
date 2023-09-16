@@ -51,4 +51,12 @@ import { environment } from 'src/environments/environment';
             })
         );
     }
+
+    getMyPokemon(userId: string): Observable<Creature>{
+        return this.http.get<Creature>(`${environment.apiUrl}/Creature/GetMyPokemon/${userId}`).pipe(
+        map(response => {
+            return response;
+            })
+        );
+    }
 }

@@ -4,6 +4,7 @@
         <div class="card">
             <img *ngIf="entry.creatureImagePath != undefined" [src]="entry.creatureImagePath" class="creature">
             <span class="level">Lvl. {{ entry.level }}</span>
+            <span class="caught-count">Pokemon Caught: {{ entry.caughtCount }}</span>
             <div class="badge-list">
                 <img *ngIf="entry.pewter" src="assets/pewter.png" class="badge-image">
                 <img *ngIf="entry.cerulean" src="assets/cerulean.png" class="badge-image">

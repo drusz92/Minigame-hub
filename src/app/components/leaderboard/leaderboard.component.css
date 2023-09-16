@@ -30,7 +30,14 @@
 
 .level {
     position: absolute;
-    top: 10px;
+    top: 1vh;
+    right: 10px;
+    font-weight: bold;
+}
+
+.caught-count{
+    position: absolute;
+    top: 6vh;
     right: 10px;
     font-weight: bold;
 }

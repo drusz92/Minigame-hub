@@ -41,6 +41,7 @@ export class PlayComponent implements OnInit {
 
   handleCatchConfirmation() {
     this.playMyPokemonComponent.initializeData();
+    this.gymListComponent.initialize();
   }
 
   handleRelease() {

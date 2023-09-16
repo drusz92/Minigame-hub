@@ -19,6 +19,7 @@ import { PlayRightBoxComponent } from './components/play-right-box/play-right-bo
 import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { WinFlashComponent } from './components/win-flash/win-flash.component';
 import { LoseFlashComponent } from './components/lose-flash/lose-flash.component';
+import { MyPokemonListComponent } from './components/my-pokemon-list/my-pokemon-list.component';
 
 @NgModule({
   imports: [
@@ -28,7 +29,7 @@ import { LoseFlashComponent } from './components/lose-flash/lose-flash.component
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: PlayComponent },
-      { path: 'MyPokemon', component: MyPokemonComponent },
+      { path: 'MyPokemon', component: MyPokemonListComponent },
       { path: 'Leaderboard', component: LeaderboardComponent },
     ])
   ],
@@ -46,6 +47,7 @@ import { LoseFlashComponent } from './components/lose-flash/lose-flash.component
     ConfirmationPopupComponent,
     WinFlashComponent,
     LoseFlashComponent,
+    MyPokemonListComponent,
   ],
   providers: [
     CookieService

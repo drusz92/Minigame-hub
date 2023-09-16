@@ -12,4 +12,5 @@ export class Leaderboard {
     cinnabar: boolean = false;
     viridian: boolean = false;
     creatureImagePath: string = "";
+    caughtCount: number = 0;
 }

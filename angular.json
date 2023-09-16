@@ -20,7 +20,7 @@
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "baseHref": "/Minigame-hub/",
+            "baseHref": "/PokeTrainer/",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [

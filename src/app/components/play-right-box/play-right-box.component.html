@@ -1,0 +1,22 @@
+<div *ngIf="!encounterInProgress" class="locations-container">
+    <div [ngClass]="{'highlight-button': enabled(location)}" *ngFor="let location of locations" class="location-box" (click)="generateEncounter(location)">
+        <span class="min-level">{{ location.minLevel }} - {{location.maxLevel}}</span>
+        {{ location.name }}
+    </div>
+</div>
+<div *ngIf="encounterInProgress">
+    <div class="pokemon-container">
+        <img [src]="creatureImagePath" class="pokemon-image">
+        <div class="pokemon-name">{{ encounter.creatureName }}</div>
+        <div class="pokemon-level">Lvl. {{ encounter.creatureLevel }}</div>
+        <div class="button-list">
+            <button *ngIf="canCatch && !encounter.isGym" class="catch-button" (click)="catch()">Catch (1)</button>
+            <button *ngIf="!canCatch && !encounter.isGym" class="catch-button-disabled">Failed</button>
+            <button class="fight-button" (click)="fight()">Fight</button>
+            <button *ngIf="!encounter.isGym" class="run-button" (click)="run()">Run</button>
+        </div>
+    </div>
+</div>
+<app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Are you sure? This will replace your current Pokemon'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>
+<app-win-flash #winFlash></app-win-flash>
+<app-lose-flash #loseFlash></app-lose-flash>

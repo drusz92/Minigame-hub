@@ -1,0 +1,74 @@
+.leaderboard-entry {
+    place-content: center;
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 10px;
+    position: relative;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    height: 10vh;
+}
+
+.userName {
+    position: absolute;
+    text-decoration: underline;
+    top: 10px;
+    left: 10px;
+    font-weight: bold;
+}
+
+.level {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-weight: bold;
+}
+
+.creature{
+    position: absolute;
+    left: 10px;
+    top: 20px;
+    width: 5%;
+    height: auto;
+}
+
+.count {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 1px;
+    margin-bottom: 10px;
+    color: white;
+    background-color: #1976d2;
+    height: 10vh; /* This should match the height of the card */
+    display: flex; /* This and the two below align the text vertically in the center */
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px; /* Giving it a similar border-radius as the card */
+    padding: 0 10px; /* Some horizontal padding to give it a nicer look */
+}
+
+.badge-list {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    flex-wrap: nowrap; 
+    gap: 5px; 
+    margin-top: 2vh;
+    margin-bottom: 10px;
+}
+
+.badge-image {
+    width: 30px; /* You can adjust this as per your requirements */
+    height: 30px;
+}

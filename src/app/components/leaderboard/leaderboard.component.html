@@ -1,0 +1,20 @@
+<ng-container *ngIf="leaderboard">
+    <div *ngFor="let entry of leaderboard; let i = index" class="leaderboard-entry">
+        <div class="count">{{ i + 1 }}</div>
+        <div class="card">
+            <img *ngIf="entry.creatureImagePath != undefined" [src]="entry.creatureImagePath" class="creature">
+            <span class="level">Lvl. {{ entry.level }}</span>
+            <div class="badge-list">
+                <img *ngIf="entry.pewter" src="assets/pewter.png" class="badge-image">
+                <img *ngIf="entry.cerulean" src="assets/cerulean.png" class="badge-image">
+                <img *ngIf="entry.vermilion" src="assets/vermilion.png" class="badge-image">
+                <img *ngIf="entry.celadon" src="assets/celadon.png" class="badge-image">
+                <img *ngIf="entry.fuchsia" src="assets/fuchsia.png" class="badge-image">
+                <img *ngIf="entry.saffron" src="assets/saffron.png" class="badge-image">
+                <img *ngIf="entry.cinnabar" src="assets/cinnabar.png" class="badge-image">
+                <img *ngIf="entry.viridian" src="assets/viridian.png" class="badge-image">
+            </div>
+            <div class="userName">{{ entry.userName }}</div>
+        </div>
+    </div>
+</ng-container>

@@ -2,4 +2,5 @@
 <div class="container">
   <app-home></app-home>
 </div>
-
+<app-login-popup *ngIf="showLoginPopup" (onClose)="handleClose($event)"></app-login-popup>
+<router-outlet></router-outlet>

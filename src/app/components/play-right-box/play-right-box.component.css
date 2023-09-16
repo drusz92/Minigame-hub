@@ -1,0 +1,181 @@
+.location-box {
+    display: flex;
+    align-items: center; /* vertically center the text */
+    justify-content: center; /* horizontally center the text */
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    background-color: grey;
+    color: white;
+    position: relative;
+    cursor: pointer;
+}
+
+.highlight-button{
+    background-color: #1976d2;
+}
+
+.highlight-button:hover {
+    border: 3px solid gold;
+}
+
+.min-level {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px; /* or adjust to your preference */
+    background-color: #f9f9f9; /* or adjust to your preference */
+    padding: 3px;
+    border-radius: 3px;
+}
+
+.locations-container {
+    margin-top: 20px;
+    max-height: 400px;  /* or any height that fits your design */
+    width: 100%;  /* optional, adjust as needed */
+}
+
+.pokemon-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+ }
+ 
+ /* Style for the image */
+ .pokemon-image {
+    width: 60%;
+    height: auto;
+    justify-items: center;
+    align-items: center;
+    display: block;
+    margin: 0 auto;
+ }
+
+.pokemon-name {
+    position: absolute;
+    top: 10px;  /* adjust as needed */
+    left: 10px; /* adjust as needed */
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 4px;
+ }
+ 
+ .pokemon-level {
+    position: absolute;
+    top: 10px;   /* adjust as needed */
+    right: 10px; /* adjust as needed */
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 4px;
+ }
+
+ .run-button {
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    background-color: #1976d2;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    right: 0;
+    left: auto;  /* override the left positioning */
+    transform: translateY(-40%);
+    bottom: 0%;
+}
+
+.run-button:hover {
+    border: 3px solid gold;
+}
+
+.fight-button {
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    background-color: #1976d2;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    left: 50%;
+    transform: translateX(-50%) translateY(-40%);
+    bottom: 0%;
+}
+
+.fight-button:hover {
+    border: 3px solid gold;
+}
+
+.catch-button {
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    background-color: #1976d2;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    float: right;
+    left: 0;
+    transform: translateY(-40%);
+    bottom: 0%;
+}
+
+
+
+.catch-button:hover {
+    border: 3px solid gold;
+}
+
+.catch-button-disabled{
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    background-color: grey;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    float: right;
+    left: 0;
+    transform: translateY(-40%);
+    bottom: 0%;
+}
+
+.button-list{
+    margin-top: 8vh;
+    display: flex;
+}
+
+
+.vertical-boxes {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1rem; /* add space between the boxes and the locations-container */
+}
+
+.box {
+    width: 50px; /* or desired width */
+    height: 50px; /* or desired height */
+    background-color: red; /* or desired background-color */
+    margin-bottom: 1rem; /* add space between boxes */
+}
+
+/* If you don't want margin for the last box */
+.box:last-child {
+    margin-bottom: 0;
+}

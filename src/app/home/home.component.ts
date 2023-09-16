@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onGameSelected(game: any) {
+  onGymSelected(game: any) {
     this.selectedGame = game;
     this.currentGameName = game.name;
   }

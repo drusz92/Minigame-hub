@@ -1,6 +1,0 @@
-<h2 class="minigames-title">Minigames:</h2>
-<div class="games-container">
-    <div class="game-box" [ngStyle]="{'background-color': game.hasWon? 'darkgreen' : '#1976d2'}" *ngFor="let game of games" (click)="selectGame(game)">
-      {{ game.displayName }} 
-    </div>
-</div>

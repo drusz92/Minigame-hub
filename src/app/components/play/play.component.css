@@ -1,0 +1,24 @@
+.box-container {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: 0 auto; /* centers the container */
+}
+  
+  .horizontal-bar {
+    height: 5px;          /* Adjust as per your preferred thickness */
+    background-color: black;
+    width: 100%;          /* This ensures the bar takes up the full width */
+    margin-top: 10px;     /* Optional: Add some spacing above the bar */
+    margin-bottom: 10px;  /* Optional: Add some spacing below the bar */
+  }
+
+  .large-box {
+    width: 45%;
+    margin: 40px auto;
+    margin-bottom: 40px;
+    height: 50vh;
+    border: 2px solid black;
+    font-size: 24px;
+    background-color: white;
+}

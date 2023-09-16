@@ -9,12 +9,16 @@ import { CookieService } from 'ngx-cookie-service';
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { HomeComponent } from './home/home.component';
-import { MinigameBoxComponent } from './components/minigame-box/minigame-box.component';
-import { GameListComponent } from './components/game-list/game-list.component';
-import { GameDisplayComponent } from './components/game-display/game-display.component';
-import { Game1Component } from './components/games/game1/game1.component';
-import { Game2Component } from './components/games/game2/game2.component';
-import { Game0Component } from './components/games/game0/game0.component';
+import { GymListComponent } from './components/gym-list/gym-list.component';
+import { MyPokemonComponent } from './components/my-pokemon/my-pokemon.component';
+import { LoginPopupComponent } from './components/login-popup/login-popup.component';
+import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { PlayComponent } from './components/play/play.component';
+import { PlayMyPokemonComponent } from './components/play-my-pokemon/play-my-pokemon.component';
+import { PlayRightBoxComponent } from './components/play-right-box/play-right-box.component';
+import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
+import { WinFlashComponent } from './components/win-flash/win-flash.component';
+import { LoseFlashComponent } from './components/lose-flash/lose-flash.component';
 
 @NgModule({
   imports: [
@@ -23,19 +27,25 @@ import { Game0Component } from './components/games/game0/game0.component';
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent },
+      { path: '', component: PlayComponent },
+      { path: 'MyPokemon', component: MyPokemonComponent },
+      { path: 'Leaderboard', component: LeaderboardComponent },
     ])
   ],
   declarations: [
     AppComponent,
     TopBarComponent,
     HomeComponent,
-    MinigameBoxComponent,
-    GameListComponent,
-    GameDisplayComponent,
-    Game1Component,
-    Game2Component,
-    Game0Component,
+    GymListComponent,
+    MyPokemonComponent,
+    LoginPopupComponent,
+    LeaderboardComponent,
+    PlayComponent,
+    PlayMyPokemonComponent,
+    PlayRightBoxComponent,
+    ConfirmationPopupComponent,
+    WinFlashComponent,
+    LoseFlashComponent,
   ],
   providers: [
     CookieService

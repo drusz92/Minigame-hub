@@ -1,0 +1,22 @@
+<div class="large-box">
+  <div *ngIf="creature.id != 0" class="pokemon-container">
+    <div class="pokemon-name">{{ creature.name }}</div>
+    <div class="pokemon-level">Lvl. {{ creature.level }}</div> <!-- You can replace this with any other property you want to display -->
+    <img [src]="creatureImagePath" class="pokemon-image">
+    <div class="evolve-buttons-container">
+      <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Flareon')">Evolve</button>
+      <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Vaporeon')">Evolve</button>
+      <button class="evolve-button-jolteon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Jolteon')">Evolve</button>
+  </div>
+    <button class="evolve-button" *ngIf="canEvolve() && creature.name != 'Eevee'" (click)="evolve()">Evolve</button>
+    <button class="release-button" (click)="releasePokemon()">Release</button>
+  </div>
+  <div *ngIf="creature.id == 0" class="pokemon-container">
+    <div class="no-pokemon-content">
+        You currently have no pokemon.
+        <button class="no-pokemon-button" (click)="getPokemon()">Get Free Pokemon</button>
+    </div>
+  </div>
+</div>
+
+<app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Are you sure you want to release your Pokemon?'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>

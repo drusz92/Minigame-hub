@@ -1,0 +1,11 @@
+.nav-links {
+    display: flex;         /* Set the container to be a flexbox container */
+    justify-content: space-around; /* Space the links evenly */
+    align-items: center;   /* Optional: Vertically center the links if needed */
+    width: 100%;
+  }
+  
+  /* Optional: to ensure each link takes full width of its content */
+  .nav-links a {
+    display: inline-block;
+  }

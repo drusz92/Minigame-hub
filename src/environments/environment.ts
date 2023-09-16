@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7076'
+  apiUrl: 'https://poketrainerapi.azurewebsites.net/'
 };
 
 /*

@@ -46,6 +46,10 @@ export class PlayComponent implements OnInit {
 
   handleRelease() {
     this.gymListComponent.initialize();
-    this.playRightBoxComponent.initialize();
+    this.playRightBoxComponent.initialize(false);
+  }
+
+  handleGeneratePokemon() {
+    this.playRightBoxComponent.initialize(false);
   }
 }

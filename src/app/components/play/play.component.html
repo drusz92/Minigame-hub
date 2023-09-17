@@ -1,6 +1,6 @@
 <div class="box-container">
     <div class="large-box">
-        <app-play-my-pokemon (onRelease)="handleRelease()"></app-play-my-pokemon>
+        <app-play-my-pokemon (onGeneratePokemon)="handleGeneratePokemon()" (onRelease)="handleRelease()"></app-play-my-pokemon>
     </div>
     <div class="large-box">
         <app-play-right-box (onCatchConfirmation)="handleCatchConfirmation()"></app-play-right-box>

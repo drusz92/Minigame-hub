@@ -37,19 +37,19 @@ export class PlayRightBoxComponent implements OnInit {
     private winService: WinService) { }
 
   ngOnInit(): void {
-    this.initialize();
+    this.initialize(false);
   }
 
-  initialize() {
+  initialize(fromCreature: boolean) {
     this.currentLocationName = this.cookieService.get('currentLocation') ?? 'location1';
     this.locations = this.getCurrentLocation(this.currentLocationName);
     this.userId = this.cookieService.get('userId');
+    this.encounterInProgress = false;
     if (this.userId == ""){
-      this.creature = new Creature();
-      this.encounterInProgress = false;
+      this.creature = new Creature();    
     }
     else {
-      this.getEncounter();
+      this.getEncounter(fromCreature);
     }
   }
 
@@ -74,7 +74,7 @@ export class PlayRightBoxComponent implements OnInit {
     }
   }
 
-  getEncounter() {
+  getEncounter(fromCreature: boolean) {
     this.encounterService.getEncounter(this.userId).subscribe(
       (data: any) => {
         if (data.length == 0){
@@ -86,7 +86,7 @@ export class PlayRightBoxComponent implements OnInit {
           this.encounter = data[0];
           this.canCatch = this.encounter.canCatch;
         }        
-        this.getCreature();
+        if (!fromCreature) this.getCreature();
       },
       (error: any) => {
           console.error('Error fetching encounter:', error);
@@ -106,7 +106,7 @@ export class PlayRightBoxComponent implements OnInit {
             this.creatureImagePath = `assets/${this.encounter.creatureName.toLowerCase()}.png`;
           
         }
-        this.initialize();
+        this.initialize(true);
       },
       (error: any) => {
           console.error('Error fetching creature:', error);
@@ -128,7 +128,7 @@ export class PlayRightBoxComponent implements OnInit {
         (data: any) => {
           this.encounterInProgress = true;
           this.encounter = data[0]; 
-          this.initialize();    
+          this.initialize(false);    
         },
         (error: any) => {
             console.error('Error generating encounter:', error);
@@ -142,7 +142,7 @@ export class PlayRightBoxComponent implements OnInit {
       (data: any) => {
         this.encounterInProgress = true;
         this.encounter = data[0]; 
-        this.initialize();    
+        this.initialize(false);    
       },
       (error: any) => {
           console.error('Error generating encounter:', error);
@@ -153,7 +153,7 @@ export class PlayRightBoxComponent implements OnInit {
   run(){
     this.encounterService.run(this.userId).subscribe(
       (data: any) => {
-        this.initialize();  
+        this.initialize(false);  
       },
       (error: any) => {
           console.error('Error generating encounter:', error);
@@ -169,7 +169,7 @@ export class PlayRightBoxComponent implements OnInit {
       this.encounterService.successfulCatch(this.userId).subscribe(
         (data: any) => {
           this.onCatchConfirmation.emit();
-          this.initialize();
+          this.initialize(false);
         },
         (error: any) => {
             console.error('Error failing catch', error);
@@ -179,7 +179,7 @@ export class PlayRightBoxComponent implements OnInit {
     else{ 
       this.encounterService.failedCatch(this.userId).subscribe(
         (data: any) => {
-          this.initialize();
+          this.initialize(false);
         },
         (error: any) => {
             console.error('Error failing catch', error);
@@ -208,9 +208,11 @@ export class PlayRightBoxComponent implements OnInit {
       (data: any) => {
         if (data.length > 0) { 
           this.winFlash.onWinEvent(); 
-          this.winService.announceGymListReload();                         
+          this.winService.announceGymListReload();  
+          this.initialize(false);                       
         } else {
           this.loseFlash.onLoseEvent(); 
+          this.initialize(false);
         }
         this.onCatchConfirmation.emit();
       },
@@ -218,7 +220,6 @@ export class PlayRightBoxComponent implements OnInit {
         console.error('Error generating encounter:', error);
       }
     );
-    this.initialize();
   }
 
   zone1(){

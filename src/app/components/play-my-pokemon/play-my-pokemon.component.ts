@@ -17,6 +17,7 @@ export class PlayMyPokemonComponent implements OnInit {
   showConfirmationPopup: boolean = false;
   
   @Output() onRelease = new EventEmitter<void>();
+  @Output() onGeneratePokemon = new EventEmitter<void>();
 
   constructor(private creatureService: CreatureService, private cookieService: CookieService, private userService: UserService,
     private encounterService: EncounterService) { 
@@ -91,6 +92,7 @@ export class PlayMyPokemonComponent implements OnInit {
       (data: any) => {
           this.creature = data[0];
           this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+          this.onGeneratePokemon.emit();
           this.initializeData();
       },
       (error: any) => {

@@ -45,6 +45,7 @@ export class PlayRightBoxComponent implements OnInit {
     this.locations = this.getCurrentLocation(this.currentLocationName);
     this.userId = this.cookieService.get('userId');
     this.encounterInProgress = false;
+    if (this.encounter.id == undefined) this.creatureImagePath = '';
     if (this.userId == ""){
       this.creature = new Creature();    
     }

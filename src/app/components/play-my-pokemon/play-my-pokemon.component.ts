@@ -15,9 +15,11 @@ export class PlayMyPokemonComponent implements OnInit {
   userId: string = "";
   creature: Creature = new Creature();
   showConfirmationPopup: boolean = false;
+  isCrit: boolean = false;
   
   @Output() onRelease = new EventEmitter<void>();
   @Output() onGeneratePokemon = new EventEmitter<void>();
+  @Output() critEvent = new EventEmitter<boolean>()
 
   constructor(private creatureService: CreatureService, private cookieService: CookieService, private userService: UserService,
     private encounterService: EncounterService) { 
@@ -93,6 +95,7 @@ export class PlayMyPokemonComponent implements OnInit {
           this.creature = data[0];
           this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
           this.onGeneratePokemon.emit();
+          this.critEvent.emit(true);
           this.initializeData();
       },
       (error: any) => {
@@ -129,5 +132,17 @@ export class PlayMyPokemonComponent implements OnInit {
   handleDeny() {
     this.showConfirmationPopup = false;
   }
+
+  getHealthPercentage(): number {
+    return (this.creature.currentHealth / this.creature.maxHealth) * 100;
+}
+
+critHit() {
+  this.isCrit = true;
+  // If you want to remove the crit flash after some time, reset the flag:
+  setTimeout(() => {
+      this.isCrit = false;
+  }, 500); // 500ms matches the duration of the flash animation.
+}
 
 }

@@ -7,4 +7,6 @@ export class Encounter {
     isGym: boolean = false;
     location: string = "";
     canCatch: boolean = false;
+    currentHealth: number = 5;
+    maxHealth: number = 5;
 }

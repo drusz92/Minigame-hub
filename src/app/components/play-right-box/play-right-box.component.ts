@@ -27,9 +27,11 @@ export class PlayRightBoxComponent implements OnInit {
   encounterInProgress: boolean = true;
   encounter: any = {};
   canCatch: boolean = false;
+  isCrit = false;
   showConfirmationPopup: boolean = false;
 
   @Output() onCatchConfirmation = new EventEmitter<void>();
+  @Output() critEvent = new EventEmitter<void>();
   @ViewChild('winFlash') winFlash!: WinFlashComponent;
   @ViewChild('loseFlash') loseFlash!: LoseFlashComponent;
   
@@ -44,7 +46,6 @@ export class PlayRightBoxComponent implements OnInit {
     this.currentLocationName = this.cookieService.get('currentLocation') ?? 'location1';
     this.locations = this.getCurrentLocation(this.currentLocationName);
     this.userId = this.cookieService.get('userId');
-    this.encounterInProgress = false;
     if (this.encounter.id == undefined) this.creatureImagePath = '';
     if (this.userId == ""){
       this.creature = new Creature();    
@@ -155,6 +156,7 @@ export class PlayRightBoxComponent implements OnInit {
     this.encounterService.run(this.userId).subscribe(
       (data: any) => {
         this.initialize(false);  
+        this.onCatchConfirmation.emit();
       },
       (error: any) => {
           console.error('Error generating encounter:', error);
@@ -191,14 +193,20 @@ export class PlayRightBoxComponent implements OnInit {
   }
 
   attemptCatch(): boolean {
-    if (this.creature.level > this.encounter.creatureLevel) {
-      return Math.random() < 0.75;  // True with 75% probability
-    } else if (this.creature.level == this.encounter.creatureLevel) {
-        return Math.random() < 0.40;  // True with 40% probability
+    let healthPercentage = this.encounter.currentHealth / this.encounter.maxHealth;
+    let adjustedRate = 0;
+    if (this.encounter.creatureLevel < 10) {
+        adjustedRate = (1 - healthPercentage) * 0.80 + healthPercentage * 0.95;
+    } else if (this.encounter.creatureLevel < 30) {
+        adjustedRate = (1 - healthPercentage) * 0.50 + healthPercentage * 0.90;  
+    } else if (this.encounter.creatureLevel < 50) {
+        adjustedRate = (1 - healthPercentage) * 0.30 + healthPercentage * 0.80;  
     } else {
-        return Math.random() < 0.05;  // True with 5% probability
+        adjustedRate = (1 - healthPercentage) * 0.10 + healthPercentage * 0.70;
     }
-  }
+
+    return Math.random() < adjustedRate;
+}
   
   handleDeny() {
     this.showConfirmationPopup = false;
@@ -207,20 +215,38 @@ export class PlayRightBoxComponent implements OnInit {
   fight(){
     this.encounterService.fight(this.userId).subscribe(
       (data: any) => {
-        if (data.length > 0) { 
-          this.winFlash.onWinEvent(); 
-          this.winService.announceGymListReload();  
-          this.initialize(false);                       
-        } else {
-          this.loseFlash.onLoseEvent(); 
-          this.initialize(false);
+        this.creatureService.getCreature(this.userId).subscribe(
+          (creatureData: any) => {
+          if (this.creature.currentHealth > creatureData[0]?.currentHealth ?? 0 + 1 ){
+            this.critEvent.emit();
+          }
+          this.creature = creatureData[0] ?? new Creature();
+          if (this.creature.id != 0) {
+            if (data.length > 0) { 
+              if (this.encounter.currentHealth > data[0].currentHealth + 1){
+                this.critHit();
+              }
+              this.encounter.currentHealth = data[0].currentHealth;
+              this.encounter.maxHealth = data[0].maxHealth;
+              this.initialize(false);  
+            }
+            else{
+              this.winFlash.onWinEvent(); 
+              this.winService.announceGymListReload();  
+              this.initialize(false);  
+            }                               
+          } else {
+            this.loseFlash.onLoseEvent(); 
+            this.initialize(false);
+          }
+          this.onCatchConfirmation.emit();
+        },
+        (error: any) => {
+          console.error('Error generating encounter:', error);
         }
-        this.onCatchConfirmation.emit();
-      },
-      (error: any) => {
-        console.error('Error generating encounter:', error);
-      }
+      )}
     );
+      
   }
 
   zone1(){
@@ -272,5 +298,17 @@ export class PlayRightBoxComponent implements OnInit {
     this.cookieService.set('currentLocation', this.currentLocationName, 365);
     this.locations = locations5;
   }
+
+  getHealthPercentage(): number {
+    return (this.encounter.currentHealth / this.encounter.maxHealth) * 100;
+}
+
+critHit() {
+  this.isCrit = true;
+  // If you want to remove the crit flash after some time, reset the flag:
+  setTimeout(() => {
+      this.isCrit = false;
+  }, 500); // 500ms matches the duration of the flash animation.
+}
 
 }

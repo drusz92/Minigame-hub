@@ -17,8 +17,14 @@
     width: 45%;
     margin: 40px auto;
     margin-bottom: 40px;
-    height: 50vh;
+    height: 460px;
     border: 2px solid black;
     font-size: 24px;
     background-color: white;
+    padding-top: 10px;
 }
+
+.crit {
+    animation: flashRedBorder 0.5s forwards;
+}
+

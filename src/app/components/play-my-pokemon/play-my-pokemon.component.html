@@ -1,4 +1,4 @@
-<div *ngIf="creature.id == 0" class="pokemon-container">
+<div *ngIf="creature.id == 0" class="pokemon-container" [ngClass]="{'crit-flash': isCrit}">
     <div class="no-pokemon-content">
         You currently have no pokemon.
         <button class="no-pokemon-button" (click)="getPokemon()">Get Free Pokemon</button>
@@ -6,8 +6,13 @@
 </div>
 <div *ngIf="creature.id != 0" class="pokemon-container">
     <img [src]="creatureImagePath" class="pokemon-image">
-    <div class="pokemon-name">{{ creature.name }}</div>
-    <div class="pokemon-level">Lvl. {{ creature.level }}</div>  
+    <div class="info-container">
+            <div class="pokemon-name">{{ creature.name }}</div>
+            <div class="health-bar-container">
+                <div class="health-bar-current" [style.width]="getHealthPercentage() + '%'"></div>
+            </div>
+            <div class="pokemon-level">Lvl. {{ creature.level }}</div>
+        </div> 
     <div class="evolve-buttons-container">
         <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Flareon')">Evolve</button>
         <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Vaporeon')">Evolve</button>

@@ -6,4 +6,6 @@ export class Creature {
     userId: string = "";
     name: string = "";
     evolvesAt: number | undefined;
+    currentHealth: number = 5;
+    maxHealth: number = 5;
 }

@@ -28,7 +28,6 @@ export class PlayComponent implements OnInit {
       this.showConfirmationPopup = true;
     }
   }
-    
 
   handleConfirm(){
     this.playRightBoxComponent.generateGymEncounter(this.gymName);
@@ -51,5 +50,9 @@ export class PlayComponent implements OnInit {
 
   handleGeneratePokemon() {
     this.playRightBoxComponent.initialize(false);
+  }
+
+  triggerCrit() {
+    this.playMyPokemonComponent.critHit();
   }
 }

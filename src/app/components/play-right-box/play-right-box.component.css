@@ -159,12 +159,14 @@
 }
 
 .button-list{
-    margin-top: 8vh;
+    margin-top: 60px;
     display: flex;
+    position: relative;
 }
 
 .main-container {
     position: relative;
+    border: 3px solid transparent;
 }
 
 .locations-container {
@@ -184,7 +186,7 @@
 }
 
 .box {
-    width: 98px; /* increased by 40px */
+    width: 95px; 
     height: 100%;
     background-color:  #1976d2;
     margin-bottom: 15px;
@@ -208,4 +210,68 @@
 /* If you don't want margin for the last box */
 .box:last-child {
     margin-bottom: 0;
+}
+
+.info-container {
+    display: flex;
+    align-items: center; 
+    position: absolute;
+    top: 10px; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%; /* setting a width for diagnostic purposes */
+}
+
+.pokemon-name, .pokemon-level {
+    position: static; /* make sure it's not positioned absolutely */
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0 10px;
+}
+
+.health-bar-container {
+    flex: 1; /* it should grow and shrink equally */
+    height: 20px;
+    background-color: pink; /* temporary: just to see the box */
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+
+.health-bar-current {
+    height: 100%;
+    background-color: green;
+    width: 100%;  /* This will be overridden by the Angular code, but it's good to have a default. */
+}
+
+@keyframes flashRedBorder {
+    0%, 100% { border-color: transparent; } /* starts and ends at transparent */
+    50% { border-color: red; } /* midpoint is red */
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%, 50%, 70% {
+        transform: translate3d(-3px, 0, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(3px, 0, 0);
+    }
+}
+
+.crit-flash {
+    margin-top: -13px;
+    height: 460px;
+    animation: 
+        flashRedBorder 1s forwards, 
+        shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }

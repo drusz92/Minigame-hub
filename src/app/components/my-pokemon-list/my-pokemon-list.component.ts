@@ -30,19 +30,32 @@ export class MyPokemonListComponent implements OnInit {
 
   getMyList() {
     this.creatureService.getMyPokemon(this.userId).pipe(
-      map((data: any) => {
-        return data.map((item: any) => ({
-          ...item,
-          creatureImagePath: `assets/${item.name.toLowerCase()}.png`
-        }));
-      }),
-      catchError((error: any) => {
-        console.error('Error getting my pokemon list:', error);
-        return EMPTY;
-      })
+        map((data: any) => {
+            return data.map((item: any) => {
+                if (item.UserId === '' && (this.list.some((existingItem: { name: any; }) => existingItem.name === item.name) ||
+                    this.list.some((existingItem: { name: string; }) => existingItem.name === item.name + '-s'))) {
+                    item.UserId = this.userId;
+                }
+                return {
+                    ...item,
+                    creatureImagePath: this.getPokemonImage(item)
+                };
+            });
+        }),
+        map((data: any) => {
+            return data.filter((item: any) => !item.name.endsWith('-s'));
+        }),
+        catchError((error: any) => {
+            console.error('Error getting my pokemon list:', error);
+            return EMPTY;
+        })
     ).subscribe((list: any[]) => {
-      this.list = list;
+        this.list = list;
     });
+}
+
+  getPokemonImage(item: any){
+    return `assets/${item.name.toLowerCase()}.png`;
   }
 
 }

@@ -21,13 +21,17 @@ export class LeaderboardComponent implements OnInit {
       map((result: any[]) => {
         return result.map(entry => ({
           ...entry,
-          creatureImagePath: entry.creatureName ? `assets/${entry.creatureName.toLowerCase()}.png` : undefined,
+          creatureImagePath: entry.creatureName ? this.getCreatureImage(entry) : undefined,
           level: entry.creatureName ? entry.level : 0
         }));
       })
     ).subscribe(leaderboard => {
       this.leaderboard = leaderboard;
     });
+  }
+
+  getCreatureImage(entry: any){
+    return `assets/${entry.creatureName.toLowerCase()}.png`;
   }
 
 }

@@ -49,7 +49,7 @@ export class PlayMyPokemonComponent implements OnInit {
           this.flashGold();
         } else {
           this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+          this.creatureImagePath = this.getCreatureImage();
         }
       },
       (error: any) => {
@@ -69,7 +69,7 @@ export class PlayMyPokemonComponent implements OnInit {
       tap((data: any) => {
         if (data && data.length > 0) {
           this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+          this.creatureImagePath = this.getCreatureImage();
         } else {
           console.warn('No creature data received on evolve.');
         }
@@ -89,7 +89,7 @@ export class PlayMyPokemonComponent implements OnInit {
       tap((data: any) => {
         if (data && data.length > 0) {
           this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+          this.creatureImagePath = this.getCreatureImage();
         } else {
           console.warn('No creature data received on evolveEevee.');
         }
@@ -116,7 +116,7 @@ export class PlayMyPokemonComponent implements OnInit {
       tap((data: any) => {
         if (data && data.length > 0) {
           this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+          this.creatureImagePath = this.getCreatureImage();
           this.emitEventsAndInitialize();
         } else {
           console.warn('No pokemon data received.');
@@ -175,6 +175,10 @@ flashGold() {
   setTimeout(() => {
       this.isCritGold = false;
   }, 500);
+}
+
+getCreatureImage(){
+  return `assets/gifs/${this.creature.name.toLowerCase()}.gif`;
 }
 
 }

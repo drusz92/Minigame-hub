@@ -11,12 +11,13 @@
  
  /* Style for the image */
  .pokemon-image {
-    width: 70%;
-    height: auto;
+    height: 40%;
+    width: auto;
+    position: relative;
+    margin-top: 15vh;
     justify-items: center;
     align-items: center;
     display: block;
-    margin: 0 auto;
  }
  
  /* Styles for the text area */

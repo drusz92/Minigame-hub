@@ -112,7 +112,7 @@ getEncounter() {
         } else {
           const creature = data[0];
           if (this.encounter.creatureName != undefined) {
-            this.creatureImagePath = `assets/${this.encounter.creatureName.toLowerCase()}.png`;
+            this.creatureImagePath = this.getEncounterImage();
           }
           return creature;
         }
@@ -333,6 +333,11 @@ critHit() {
 ngOnDestroy() {
   this.destroyed$.next();
   this.destroyed$.complete();
+}
+
+getEncounterImage(){
+  return `assets/${this.encounter.creatureName.toLowerCase()}.png`
+  //return `assets/gifs/${this.creature.name.toLowerCase()}.gif`;
 }
 
 }

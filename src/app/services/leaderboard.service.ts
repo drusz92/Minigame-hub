@@ -13,12 +13,6 @@ import { Leaderboard } from '../models/leaderboard.model';
     }
   
     getLeaderboard(): Observable<Leaderboard[]> {
-        return this.http.get<Leaderboard[]>(`${environment.apiUrl}/Leaderboard/GetLeaderboard`)
-        .pipe(
-            catchError(err => {
-                console.error('Error fetching leaderboard:', err);
-                return [];
-            })
-        );
+        return this.http.get<Leaderboard[]>(`${environment.apiUrl}/Leaderboard/GetLeaderboard`);
     }
 }

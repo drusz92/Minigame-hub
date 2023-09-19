@@ -12,11 +12,7 @@ import { environment } from 'src/environments/environment';
     constructor(private http: HttpClient) { 
     }
   
-    getGyms(userId: string): Observable<Gym>{
-        return this.http.get<Gym>(`${environment.apiUrl}/Gym/${userId}`).pipe(
-        map(response => {
-            return response;
-            })
-        );
+    getGyms(userId: string): Observable<Gym[]>{
+        return this.http.get<Gym[]>(`${environment.apiUrl}/Gym/${userId}`);
     }
 }

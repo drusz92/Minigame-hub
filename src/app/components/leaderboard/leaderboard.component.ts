@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { map } from 'rxjs';
 import { Leaderboard } from 'src/app/models/leaderboard.model';
 import { LeaderboardService } from 'src/app/services/leaderboard.service';
 
@@ -16,21 +17,17 @@ export class LeaderboardComponent implements OnInit {
   }
 
   initialize() {
-    this.leaderboardService.getLeaderboard().subscribe(result=>{
-      this.leaderboard = result;
-      this.setupImages();
+    this.leaderboardService.getLeaderboard().pipe(
+      map((result: any[]) => {
+        return result.map(entry => ({
+          ...entry,
+          creatureImagePath: entry.creatureName ? `assets/${entry.creatureName.toLowerCase()}.png` : undefined,
+          level: entry.creatureName ? entry.level : 0
+        }));
+      })
+    ).subscribe(leaderboard => {
+      this.leaderboard = leaderboard;
     });
   }
-
-  setupImages(): void {
-    this.leaderboard.forEach(leaderboardEntry => {
-      if (leaderboardEntry.creatureName){
-        leaderboardEntry.creatureImagePath = `assets/${leaderboardEntry.creatureName.toLowerCase()}.png`;
-      }
-      else{
-        leaderboardEntry.level = 0;
-      }
-    });
-}
 
 }

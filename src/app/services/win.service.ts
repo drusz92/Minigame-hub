@@ -20,14 +20,7 @@ import { environment } from 'src/environments/environment';
     reloadGymList$ = this.reloadGymListSource.asObservable();
   
     announceWin(gym: Gym) {
-    this.http.post(`${environment.apiUrl}/Gym/CompleteGym`, gym).subscribe(
-        response => {
-          return response;
-        },
-        error => {
-          console.error('Error fetching data:', error);
-        }
-      );
+    this.http.post(`${environment.apiUrl}/Gym/CompleteGym`, gym);
     }
   
     announceGymListReload() {

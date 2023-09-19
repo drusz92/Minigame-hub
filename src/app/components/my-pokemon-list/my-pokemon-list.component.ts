@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { EMPTY, catchError, map } from 'rxjs';
 import { CreatureService } from 'src/app/services/creature.service';
 
 @Component({
@@ -27,18 +28,21 @@ export class MyPokemonListComponent implements OnInit {
     }  
   }
 
-  getMyList(){
-    this.creatureService.getMyPokemon(this.userId).subscribe(
-      (data: any) => {
-          this.list = data;
-          for (let item of this.list) {
-            item.creatureImagePath = `assets/${item.name.toLowerCase()}.png`;
-          }           
-      },
-      (error: any) => {
-          console.error('Error getting my pokemon list:', error);
-      }
-    ); 
+  getMyList() {
+    this.creatureService.getMyPokemon(this.userId).pipe(
+      map((data: any) => {
+        return data.map((item: any) => ({
+          ...item,
+          creatureImagePath: `assets/${item.name.toLowerCase()}.png`
+        }));
+      }),
+      catchError((error: any) => {
+        console.error('Error getting my pokemon list:', error);
+        return EMPTY;
+      })
+    ).subscribe((list: any[]) => {
+      this.list = list;
+    });
   }
 
 }

@@ -8,4 +8,10 @@
 </div>
 <div class="horizontal-bar"></div>
 <app-gym-list (gymSelected)="onGymSelected($event)"></app-gym-list>
+<div *ngIf="showErrorModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button (click)="closeErrorModal()">Okay</button>
+    </div>
+  </div>
 <app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Challenge the ' + gymName + ' Gym?'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>

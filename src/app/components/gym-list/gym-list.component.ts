@@ -1,10 +1,11 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { WinService } from 'src/app/services/win.service';
-import { Subscription } from 'rxjs';
+import { Subscription, map, switchMap, tap } from 'rxjs';
 import { GymService } from 'src/app/services/gym.service';
 import { CreatureService } from 'src/app/services/creature.service';
 import { Creature } from 'src/app/models/creature.model';
+import { Gym } from 'src/app/models/gym.model';
 
 @Component({
   selector: 'app-gym-list',
@@ -29,24 +30,28 @@ export class GymListComponent implements OnInit, OnDestroy {
     this.subscriptions.push(sub);
   }
 
-  initialize(){
+  initialize() {
     this.userId = this.cookieService.get('userId');
-    this.creatureService.getCreature(this.userId).subscribe(
-      (data: any) => {
-        if (data.length == 0){
-          this.creature = new Creature();
+  
+    // Guard clause: If there's no userId, exit early.
+    if (!this.userId) {
+      this.creature = new Creature();
+      return;
+    }
+  
+    this.creatureService.getCreature(this.userId)
+      .pipe(
+        tap((data: any) => {
+          this.creature = data.length ? data[0] : new Creature();
+        }),
+        switchMap(async () => this.loadGyms()) // Chain this call, it's assumed `loadGyms` returns an observable.
+      )
+      .subscribe(
+        () => {}, // You can handle successful completion of both observables here if needed.
+        (error: any) => {
+          console.error('Error in the initialization sequence:', error);
         }
-        else{
-          this.creature = data[0];
-        }
-      },
-      (error: any) => {
-          console.error('Error fetching creature:', error);
-      }
-    ); 
-      if (this.userId != ""){
-        this.loadGyms();
-      }
+      );
   }
 
   ngOnDestroy() {
@@ -54,14 +59,22 @@ export class GymListComponent implements OnInit, OnDestroy {
   }
 
   loadGyms() {
-    this.gymService.getGyms(this.userId).subscribe(
-      (data: any) => {       
-        for (let item of data) {
-          item.imagePath = `assets/${item.name.toLowerCase()}.png`;
-          item.minLevel = this.setMinLevel(item.name.toLowerCase());
+    this.gymService.getGyms(this.userId)
+      .pipe(
+        map((gyms: Gym[]) => gyms.map(gym => ({
+          ...gym,
+          imagePath: `assets/${gym.name.toLowerCase()}.png`,
+          minLevel: this.setMinLevel(gym.name.toLowerCase())
+        })))
+      )
+      .subscribe(
+        (processedGyms: Gym[]) => {
+          this.gyms = processedGyms;
+        },
+        (error: any) => {
+          console.error('Error fetching gyms:', error);
         }
-        this.gyms = data;    
-      });
+      );
   }
 
   setMinLevel(name: string) {

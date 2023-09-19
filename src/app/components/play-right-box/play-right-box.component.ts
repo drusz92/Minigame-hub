@@ -11,6 +11,8 @@ import { EncounterService } from 'src/app/services/encounter.service';
 import { WinService } from 'src/app/services/win.service';
 import { WinFlashComponent } from '../win-flash/win-flash.component';
 import { LoseFlashComponent } from '../lose-flash/lose-flash.component';
+import { EMPTY, Observable, Subject, catchError, filter, finalize, map, of, switchMap, takeUntil, tap, throwError } from 'rxjs';
+import { Encounter } from 'src/app/models/encounter.model';
 
 
 @Component({
@@ -24,11 +26,12 @@ export class PlayRightBoxComponent implements OnInit {
   creatureImagePath: string = '';
   locations: any = [];
   currentLocationName: string = 'location1';
-  encounterInProgress: boolean = true;
+  encounterInProgress: boolean = false;
   encounter: any = {};
   canCatch: boolean = false;
   isCrit = false;
   showConfirmationPopup: boolean = false;
+  private destroyed$ = new Subject<void>();
 
   @Output() onCatchConfirmation = new EventEmitter<void>();
   @Output() critEvent = new EventEmitter<void>();
@@ -39,10 +42,10 @@ export class PlayRightBoxComponent implements OnInit {
     private winService: WinService) { }
 
   ngOnInit(): void {
-    this.initialize(false);
+    this.initialize();
   }
 
-  initialize(fromCreature: boolean) {
+  initialize() {
     this.currentLocationName = this.cookieService.get('currentLocation') ?? 'location1';
     this.locations = this.getCurrentLocation(this.currentLocationName);
     this.userId = this.cookieService.get('userId');
@@ -51,7 +54,7 @@ export class PlayRightBoxComponent implements OnInit {
       this.creature = new Creature();    
     }
     else {
-      this.getEncounter(fromCreature);
+      this.getEncounter();
     }
   }
 
@@ -76,44 +79,49 @@ export class PlayRightBoxComponent implements OnInit {
     }
   }
 
-  getEncounter(fromCreature: boolean) {
-    this.encounterService.getEncounter(this.userId).subscribe(
-      (data: any) => {
-        if (data.length == 0){
+getEncounter() {
+  this.encounterService.getEncounter(this.userId)
+    .pipe(
+      tap((data: any) => {
+        if (data.length === 0) {
           this.encounterInProgress = false;
           this.encounter = {};         
-        }
-        else{
+        } else {
           this.encounterInProgress = true;
           this.encounter = data[0];
           this.canCatch = this.encounter.canCatch;
-        }        
-        if (!fromCreature) this.getCreature();
+        }
+      }),
+      switchMap(() => this.getCreature())
+    )
+    .subscribe(
+      (creature: Creature) => {
+        this.creature = creature;
       },
       (error: any) => {
-          console.error('Error fetching encounter:', error);
+        console.error('Error:', error);
       }
-    ); 
-  }
+    );
+}
 
-  getCreature() {
-    this.creatureService.getCreature(this.userId).subscribe(
-      (data: any) => {
-        if (data.length == 0){
-          this.creature = new Creature();
-        }
-        else{
-          this.creature = data[0];
-          if (this.encounter.creatureName != undefined)
+  getCreature(): Observable<Creature> {
+    return this.creatureService.getCreature(this.userId).pipe(
+      map((data: any) => {
+        if (data.length === 0) {
+          return new Creature();
+        } else {
+          const creature = data[0];
+          if (this.encounter.creatureName != undefined) {
             this.creatureImagePath = `assets/${this.encounter.creatureName.toLowerCase()}.png`;
-          
+          }
+          return creature;
         }
-        this.initialize(true);
-      },
-      (error: any) => {
-          console.error('Error fetching creature:', error);
-      }
-    ); 
+      }),
+      catchError(error => {
+        console.error('Error fetching creature:', error);
+        return of(new Creature()); 
+      })
+    );
   }
 
   enabled(encounter: any){
@@ -124,43 +132,48 @@ export class PlayRightBoxComponent implements OnInit {
     return this.creature.level >= minLevel && this.creature.level <= maxLevel
   }
 
-  generateEncounter(encounter: any){
-    if (this.enabled(encounter)){
-      this.encounterService.generateEncounter(this.userId, this.creature.level, encounter.name, false).subscribe(
-        (data: any) => {
-          this.encounterInProgress = true;
-          this.encounter = data[0]; 
-          this.initialize(false);    
-        },
-        (error: any) => {
-            console.error('Error generating encounter:', error);
-        }
-      ); 
+  generateEncounter(encounter: any) {
+    if (!this.enabled(encounter)) {
+      return;  // Simply exit the function if the encounter isn't enabled
     }
+  
+    this.encounterService.generateEncounter(this.userId, this.creature.level, encounter.name, false).subscribe(
+      (data: any) => {
+        this.encounterInProgress = true;
+        this.encounter = data[0]; 
+        this.initialize();    
+      },
+      (error: any) => {
+        console.error('Error generating encounter:', error);
+      }
+    );
   }
-
-  generateGymEncounter(gymName: string){
+  
+  generateGymEncounter(gymName: string) {
     this.encounterService.generateGymEncounter(this.userId, gymName, true).subscribe(
       (data: any) => {
         this.encounterInProgress = true;
         this.encounter = data[0]; 
-        this.initialize(false);    
+        this.initialize();    
       },
       (error: any) => {
-          console.error('Error generating encounter:', error);
+        console.error('Error generating gym encounter:', error);
       }
-    ); 
+    );
   }
 
-  run(){
-    this.encounterService.run(this.userId).subscribe(
+  run() {
+    this.encounterService.run(this.userId).pipe(
+      catchError(error => {
+        console.error('Error running encounter:', error);
+        return throwError(error); 
+      })
+    ).subscribe(
       (data: any) => {
-        this.initialize(false);  
+        this.initialize();
         this.onCatchConfirmation.emit();
-      },
-      (error: any) => {
-          console.error('Error generating encounter:', error);
-      });   
+      }
+    );   
   }
 
   catch(){
@@ -168,43 +181,47 @@ export class PlayRightBoxComponent implements OnInit {
   }
 
   handleConfirm() {
-    if (this.attemptCatch()){
-      this.encounterService.successfulCatch(this.userId).subscribe(
-        (data: any) => {
-          this.onCatchConfirmation.emit();
-          this.initialize(false);
-        },
-        (error: any) => {
-            console.error('Error failing catch', error);
-        }
-      );
+    let encounterObservable: Observable<any>;  
+    if (this.attemptCatch()) {
+      encounterObservable = this.encounterService.successfulCatch(this.userId);
+    } else {
+      encounterObservable = this.encounterService.failedCatch(this.userId);
     }
-    else{ 
-      this.encounterService.failedCatch(this.userId).subscribe(
-        (data: any) => {
-          this.initialize(false);
-        },
-        (error: any) => {
-            console.error('Error failing catch', error);
-        }
-      );    
-    }
-    this.showConfirmationPopup = false;  
+    encounterObservable.pipe(
+      finalize(() => {
+        this.onCatchConfirmation.emit();
+        this.showConfirmationPopup = false;
+      }),
+      catchError(error => {
+        console.error('Error processing catch:', error);
+        return EMPTY; // This prevents the subsequent subscribe logic from running in case of an error.
+      })
+    ).subscribe(data => {
+      this.initialize();
+      if (this.attemptCatch()) {
+        this.onCatchConfirmation.emit();
+      }
+    });
   }
 
   attemptCatch(): boolean {
-    let healthPercentage = this.encounter.currentHealth / this.encounter.maxHealth;
-    let adjustedRate = 0;
+    const healthPercentage = this.encounter.currentHealth / this.encounter.maxHealth;
+    let maxRate: number;
+    let minRate: number;
     if (this.encounter.creatureLevel < 10) {
-        adjustedRate = (1 - healthPercentage) * 0.80 + healthPercentage * 0.95;
+        maxRate = 0.95;
+        minRate = 0.50;
     } else if (this.encounter.creatureLevel < 30) {
-        adjustedRate = (1 - healthPercentage) * 0.50 + healthPercentage * 0.90;  
+        maxRate = 0.90;
+        minRate = 0.40;
     } else if (this.encounter.creatureLevel < 50) {
-        adjustedRate = (1 - healthPercentage) * 0.30 + healthPercentage * 0.80;  
+        maxRate = 0.80;
+        minRate = 0.20;
     } else {
-        adjustedRate = (1 - healthPercentage) * 0.10 + healthPercentage * 0.70;
+        maxRate = 0.70;
+        minRate = 0.10;
     }
-
+    const adjustedRate = maxRate - (maxRate - minRate) * healthPercentage;
     return Math.random() < adjustedRate;
 }
   
@@ -212,41 +229,43 @@ export class PlayRightBoxComponent implements OnInit {
     this.showConfirmationPopup = false;
   }
 
-  fight(){
-    this.encounterService.fight(this.userId).subscribe(
-      (data: any) => {
-        this.creatureService.getCreature(this.userId).subscribe(
-          (creatureData: any) => {
-          if (this.creature.currentHealth > creatureData[0]?.currentHealth ?? 0 + 1 ){
-            this.critEvent.emit();
+  fight() {
+    this.encounterService.fight(this.userId).pipe(
+      switchMap((data: any) => {
+        return this.creatureService.getCreature(this.userId).pipe(
+          map((creatureData: any) => {
+            return { data, creatureData };
+          })
+        );
+      }),
+      catchError(error => {
+        console.error('Error processing fight:', error);
+        return EMPTY;
+      })
+    ).subscribe(({ data, creatureData }) => {
+      const creature = creatureData[0] ?? new Creature();
+      this.creature = creature;
+      if (this.creature.currentHealth > (creature.currentHealth ?? 0) + 1) {
+        this.critEvent.emit();
+      }
+      if (this.creature.id !== 0) {
+        if (data && data.length > 0) {
+          const encounterHealth = data[0].currentHealth; 
+          if (this.encounter.currentHealth > encounterHealth + 1) {
+            this.critHit();
           }
-          this.creature = creatureData[0] ?? new Creature();
-          if (this.creature.id != 0) {
-            if (data.length > 0) { 
-              if (this.encounter.currentHealth > data[0].currentHealth + 1){
-                this.critHit();
-              }
-              this.encounter.currentHealth = data[0].currentHealth;
-              this.encounter.maxHealth = data[0].maxHealth;
-              this.initialize(false);  
-            }
-            else{
-              this.winFlash.onWinEvent(); 
-              this.winService.announceGymListReload();  
-              this.initialize(false);  
-            }                               
-          } else {
-            this.loseFlash.onLoseEvent(); 
-            this.initialize(false);
-          }
-          this.onCatchConfirmation.emit();
-        },
-        (error: any) => {
-          console.error('Error generating encounter:', error);
+          this.encounter.currentHealth = encounterHealth;
+          this.encounter.maxHealth = data[0].maxHealth;
+        } else {
+          this.winFlash.onWinEvent();
+          this.winService.announceGymListReload();
         }
-      )}
-    );
-      
+      } else {
+        this.loseFlash.onLoseEvent();
+      }
+      this.initialize();
+      this.onCatchConfirmation.emit();
+    });
   }
 
   zone1(){
@@ -309,6 +328,11 @@ critHit() {
   setTimeout(() => {
       this.isCrit = false;
   }, 500); // 500ms matches the duration of the flash animation.
+}
+
+ngOnDestroy() {
+  this.destroyed$.next();
+  this.destroyed$.complete();
 }
 
 }

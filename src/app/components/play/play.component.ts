@@ -15,6 +15,9 @@ export class PlayComponent implements OnInit {
   currentGameName: any;
   showConfirmationPopup: boolean = false;
   gymName: string = "";
+  errorMessage: string | null = null;
+  showErrorModal: boolean = false;
+
   @ViewChild(PlayMyPokemonComponent) playMyPokemonComponent!: PlayMyPokemonComponent;
   @ViewChild(PlayRightBoxComponent) playRightBoxComponent!: PlayRightBoxComponent;
   @ViewChild(GymListComponent) gymListComponent!: GymListComponent;
@@ -26,6 +29,10 @@ export class PlayComponent implements OnInit {
     if (this.playRightBoxComponent.encounter.id == undefined){
       this.gymName = gym.name;
       this.showConfirmationPopup = true;
+    }
+    else{
+      this.errorMessage = "You cannot challenge a gym during an encounter";
+      this.showErrorModal = true;
     }
   }
 
@@ -45,14 +52,18 @@ export class PlayComponent implements OnInit {
 
   handleRelease() {
     this.gymListComponent.initialize();
-    this.playRightBoxComponent.initialize(false);
+    this.playRightBoxComponent.initialize();
   }
 
   handleGeneratePokemon() {
-    this.playRightBoxComponent.initialize(false);
+    this.playRightBoxComponent.initialize();
   }
 
   triggerCrit() {
     this.playMyPokemonComponent.critHit();
+  }
+
+  closeErrorModal() {
+    this.showErrorModal = false;
   }
 }

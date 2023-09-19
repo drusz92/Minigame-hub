@@ -12,13 +12,9 @@ import { Encounter } from '../models/encounter.model';
     constructor(private http: HttpClient) { 
     }
   
-    getEncounter(userId: string): Observable<Encounter>{
-        return this.http.get<Encounter>(`${environment.apiUrl}/Encounter/${userId}`).pipe(
-        map(response => {
-            return response;
-            })
-        );
-    }
+    getEncounter(userId: string): Observable<Encounter> {
+        return this.http.get<Encounter>(`${environment.apiUrl}/Encounter/${userId}`);
+      }
 
     generateEncounter(userId: string, creatureLevel: number, location: string, isGym: boolean): Observable<any> {
         var body = {

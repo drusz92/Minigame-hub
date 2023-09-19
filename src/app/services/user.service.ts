@@ -12,14 +12,7 @@ import { environment } from 'src/environments/environment';
     }
   
     getUser(userId: string) {
-        this.http.get(`${environment.apiUrl}/User?userId=` + userId).subscribe(
-            response => {
-              return response;
-            },
-            error => {
-              console.error('Error fetching data:', error);
-            }
-          );
+        this.http.get(`${environment.apiUrl}/User?userId=` + userId);
     }
 
     saveUser(userId: string, userName: string) {
@@ -27,14 +20,7 @@ import { environment } from 'src/environments/environment';
             UserId: userId,
             UserName: userName
         };
-        this.http.post(`${environment.apiUrl}/User`, body).subscribe(
-            response => {
-              return response;
-            },
-            error => {
-              console.error('Error fetching data:', error);
-            }
-          );
+        this.http.post(`${environment.apiUrl}/User`, body);
     }
 
     private userIdSubject = new BehaviorSubject<string>(''); 

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { EMPTY, catchError, finalize, switchMap, tap } from 'rxjs';
 import { Creature } from 'src/app/models/creature.model';
 import { CreatureService } from 'src/app/services/creature.service';
 import { EncounterService } from 'src/app/services/encounter.service';
@@ -34,52 +35,71 @@ export class PlayMyPokemonComponent implements OnInit {
 
   initializeData() {
     this.userId = this.cookieService.get('userId');
-    if (this.userId == ""){
-      this.creature = new Creature();
-      this.creatureImagePath = "";
+    
+    if (!this.userId) {
+      this.setEmptyCreature();
+      return;
     }
-    else
+  
     this.creatureService.getCreature(this.userId).subscribe(
       (data: any) => {
-        if (data.length == 0){
-          this.creature = new Creature();
-          this.creatureImagePath = "";
-        }
-        else{
+        if (!data || data.length === 0) {
+          this.setEmptyCreature();
+        } else {
           this.creature = data[0];
           this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
         }
       },
       (error: any) => {
-          console.error('Error fetching creature:', error);
+        console.error('Error fetching creature:', error);
+        this.setEmptyCreature();
       }
     ); 
-}
-
-  evolve(){
-    this.creatureService.evolve(this.userId).subscribe(
-      (data: any) => {
-          this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;       
-      },
-      (error: any) => {
-          console.error('Error evolving creature:', error);
-      }
-    ); 
-    this.initializeData();
+  }
+  
+  private setEmptyCreature() {
+    this.creature = new Creature();
+    this.creatureImagePath = "";
   }
 
-  evolveEevee(eeveeValue: string){
-    this.creatureService.evolveEevee(this.userId, eeveeValue).subscribe(
-      (data: any) => {
+  evolve() {
+    this.creatureService.evolve(this.userId).pipe(
+      tap((data: any) => {
+        if (data && data.length > 0) {
           this.creature = data[0];
-          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;       
-      },
-      (error: any) => {
-          console.error('Error evolving creature:', error);
-      }
-    ); 
-    this.initializeData();
+          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+        } else {
+          console.warn('No creature data received on evolve.');
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Error evolving creature:', error);
+        return EMPTY;
+      }),
+      finalize(() => {
+        this.initializeData();
+      })
+    ).subscribe();
+  }
+
+  evolveEevee(eeveeValue: string) {
+    this.creatureService.evolveEevee(this.userId, eeveeValue).pipe(
+      tap((data: any) => {
+        if (data && data.length > 0) {
+          this.creature = data[0];
+          this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
+        } else {
+          console.warn('No creature data received on evolveEevee.');
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Error evolving Eevee:', error);
+        return EMPTY;
+      }),
+      finalize(() => {
+        this.initializeData();
+      })
+    ).subscribe();
   }
 
   canEvolve(){
@@ -89,19 +109,28 @@ export class PlayMyPokemonComponent implements OnInit {
     return false;
   }
 
-  getPokemon(){
-    this.creatureService.getPokemon(this.userId).subscribe(
-      (data: any) => {
+  getPokemon() {
+    this.creatureService.getPokemon(this.userId).pipe(
+      tap((data: any) => {
+        if (data && data.length > 0) {
           this.creature = data[0];
           this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
-          this.onGeneratePokemon.emit();
-          this.critEvent.emit(true);
-          this.initializeData();
-      },
-      (error: any) => {
-          console.error('Error fetching pokemon:', error);
-      }
-    ); 
+          this.emitEventsAndInitialize();
+        } else {
+          console.warn('No pokemon data received.');
+        }
+      }),
+      catchError((error: any) => {
+        console.error('Error fetching pokemon:', error);
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+  
+  private emitEventsAndInitialize() {
+    this.onGeneratePokemon.emit();
+    this.critEvent.emit(true);
+    this.initializeData();
   }
 
   releasePokemon(){
@@ -109,24 +138,19 @@ export class PlayMyPokemonComponent implements OnInit {
   }
 
   handleConfirm() {
-    this.creatureService.releasePokemon(this.userId).subscribe(
-      (data: any) => {
-        this.encounterService.run(this.userId).subscribe(
-          (data: any) => {
-            this.onRelease.emit();
-            this.initializeData();  
-        },
-        (error: any) => {
-            console.error('Error generating encounter:', error);
-        }); 
-          this.initializeData();
-          this.showConfirmationPopup = false;
-      },
-      (error: any) => {
-          console.error('Error fetching pokemon:', error);
-          this.showConfirmationPopup = false;
-      }
-    ); 
+    this.creatureService.releasePokemon(this.userId).pipe(
+      switchMap(() => this.encounterService.run(this.userId)),
+      tap(() => {
+        this.onRelease.emit();
+        this.initializeData();
+        this.showConfirmationPopup = false;
+      }),
+      catchError((error: any) => {
+        console.error('Error:', error);
+        this.showConfirmationPopup = false;
+        return EMPTY;
+      })
+    ).subscribe();
   }
   
   handleDeny() {

@@ -12,15 +12,15 @@ import { environment } from 'src/environments/environment';
     }
   
     getUser(userId: string) {
-        this.http.get(`${environment.apiUrl}/User?userId=` + userId);
+        return this.http.get(`${environment.apiUrl}/User?userId=` + userId);
     }
-
+    
     saveUser(userId: string, userName: string) {
         const body = {
             UserId: userId,
             UserName: userName
         };
-        this.http.post(`${environment.apiUrl}/User`, body);
+        return this.http.post(`${environment.apiUrl}/User`, body);
     }
 
     private userIdSubject = new BehaviorSubject<string>(''); 

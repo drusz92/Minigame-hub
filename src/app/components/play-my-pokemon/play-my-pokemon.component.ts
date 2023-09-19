@@ -16,7 +16,8 @@ export class PlayMyPokemonComponent implements OnInit {
   userId: string = "";
   creature: Creature = new Creature();
   showConfirmationPopup: boolean = false;
-  isCrit: boolean = false;
+  isCritRed: boolean = false;
+  isCritGold: boolean = false;
   
   @Output() onRelease = new EventEmitter<void>();
   @Output() onGeneratePokemon = new EventEmitter<void>();
@@ -43,8 +44,9 @@ export class PlayMyPokemonComponent implements OnInit {
   
     this.creatureService.getCreature(this.userId).subscribe(
       (data: any) => {
-        if (!data || data.length === 0) {
+        if (!data || data.length === 0) {          
           this.setEmptyCreature();
+          this.flashGold();
         } else {
           this.creature = data[0];
           this.creatureImagePath = `assets/${this.creature.name.toLowerCase()}.png`;
@@ -162,11 +164,17 @@ export class PlayMyPokemonComponent implements OnInit {
 }
 
 critHit() {
-  this.isCrit = true;
-  // If you want to remove the crit flash after some time, reset the flag:
+  this.isCritRed = true;
   setTimeout(() => {
-      this.isCrit = false;
-  }, 500); // 500ms matches the duration of the flash animation.
+      this.isCritRed = false;
+  }, 500); 
+}
+
+flashGold() {
+  this.isCritGold = true;
+  setTimeout(() => {
+      this.isCritGold = false;
+  }, 500);
 }
 
 }

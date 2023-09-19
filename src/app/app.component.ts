@@ -30,10 +30,13 @@ export class AppComponent implements OnInit {
     let userId = this.generateRandomString(25);
     this.cookieService.set('userId', userId, 365); 
     this.cookieService.set('userName', name, 365); 
-    this.userService.saveUser(userId, name);
-    this.showLoginPopup = false; 
-    this.userService.setUserId(userId);
-    location.reload();
+    this.userService.saveUser(userId, name).subscribe(() => {
+      this.showLoginPopup = false; 
+      this.userService.setUserId(userId);
+      location.reload();
+    }, (error) => {
+        console.log("error saving user");
+    });  
   }
 
   generateRandomString(length: number): string {

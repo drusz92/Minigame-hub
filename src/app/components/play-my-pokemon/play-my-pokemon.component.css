@@ -210,6 +210,11 @@ app-confirmation-popup {
     50% { border-color: red; } /* midpoint is red */
 }
 
+@keyframes flashGoldBorder {
+    0%, 100% { border-color: transparent; } /* starts and ends at transparent */
+    50% { border-color: gold; } /* midpoint is red */
+}
+
 @keyframes shake {
     10%, 90% {
         transform: translate3d(-1px, 0, 0);
@@ -228,10 +233,18 @@ app-confirmation-popup {
     }
 }
 
-.crit-flash {
+.crit-flash-red {
     margin-top: -13px;
     height: 460px;
     animation: 
         flashRedBorder 1s forwards, 
+        shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.crit-flash-gold {
+    margin-top: -13px;
+    height: 460px;
+    animation: 
+        flashGoldBorder 1s forwards, 
         shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
 }

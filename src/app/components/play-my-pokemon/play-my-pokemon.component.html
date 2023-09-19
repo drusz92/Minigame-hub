@@ -1,4 +1,4 @@
-<div *ngIf="creature.id == 0" class="pokemon-container" [ngClass]="{'crit-flash': isCrit}">
+<div *ngIf="creature.id == 0" class="pokemon-container" [ngClass]="{'crit-flash-red': isCritRed, 'crit-flash-gold': isCritGold}">
     <div class="no-pokemon-content">
         You currently have no pokemon.
         <button class="no-pokemon-button" (click)="getPokemon()">Get Free Pokemon</button>

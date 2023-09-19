@@ -87,8 +87,8 @@ getEncounter() {
           this.encounterInProgress = false;
           this.encounter = {};         
         } else {
-          this.encounterInProgress = true;
           this.encounter = data[0];
+          this.encounterInProgress = true;        
           this.canCatch = this.encounter.canCatch;
         }
       }),
@@ -336,8 +336,7 @@ ngOnDestroy() {
 }
 
 getEncounterImage(){
-  return `assets/${this.encounter.creatureName.toLowerCase()}.png`
-  //return `assets/gifs/${this.creature.name.toLowerCase()}.gif`;
+  return `assets/gifs/${this.encounter.creatureName.toLowerCase()}.gif`;
 }
 
 }

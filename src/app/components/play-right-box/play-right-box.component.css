@@ -21,154 +21,6 @@
     border: 3px solid gold;
 }
 
-.min-level {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 12px; /* or adjust to your preference */
-    background-color: #f9f9f9; /* or adjust to your preference */
-    padding: 3px;
-    border-radius: 3px;
-}
-
-.locations-container {
-    margin-top: 20px;
-    max-height: 400px;  /* or any height that fits your design */
-    width: 100%;  /* optional, adjust as needed */
-    position: relative;
-    z-index: 1; /* ensures it's above the vertical boxes */
-}
-
-.pokemon-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
- }
- 
- /* Style for the image */
- .pokemon-image {
-    width: 60%;
-    height: auto;
-    justify-items: center;
-    align-items: center;
-    display: block;
-    margin: 0 auto;
- }
-
-.pokemon-name {
-    position: absolute;
-    top: 10px;  /* adjust as needed */
-    left: 10px; /* adjust as needed */
-    background-color: lightblue;
-    padding: 5px;
-    border-radius: 4px;
- }
- 
- .pokemon-level {
-    position: absolute;
-    top: 10px;   /* adjust as needed */
-    right: 10px; /* adjust as needed */
-    background-color: lightblue;
-    padding: 5px;
-    border-radius: 4px;
- }
-
- .run-button {
-    width: 30%;
-    justify-content: center;
-    margin: 5px;
-    background-color: #1976d2;
-    color: white; /* White text on the red button */
-    border-color: gold;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    position: absolute; /* Position it relative to the large-box */
-    font-size: 36px;    /* Adjust the font size if needed */
-    right: 0;
-    left: auto;  /* override the left positioning */
-    transform: translateY(-40%);
-    bottom: 0%;
-}
-
-.run-button:hover {
-    border: 3px solid gold;
-}
-
-.fight-button {
-    width: 30%;
-    justify-content: center;
-    margin: 5px;
-    background-color: #1976d2;
-    color: white; /* White text on the red button */
-    border-color: gold;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    position: absolute; /* Position it relative to the large-box */
-    font-size: 36px;    /* Adjust the font size if needed */
-    left: 50%;
-    transform: translateX(-50%) translateY(-40%);
-    bottom: 0%;
-}
-
-.fight-button:hover {
-    border: 3px solid gold;
-}
-
-.catch-button {
-    width: 30%;
-    justify-content: center;
-    margin: 5px;
-    background-color: #1976d2;
-    color: white; /* White text on the red button */
-    border-color: gold;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    position: absolute; /* Position it relative to the large-box */
-    font-size: 36px;    /* Adjust the font size if needed */
-    float: right;
-    left: 0;
-    transform: translateY(-40%);
-    bottom: 0%;
-}
-
-
-
-.catch-button:hover {
-    border: 3px solid gold;
-}
-
-.catch-button-disabled{
-    width: 30%;
-    justify-content: center;
-    margin: 5px;
-    background-color: grey;
-    color: white; /* White text on the red button */
-    border-color: gold;
-    border-radius: 5px;
-    padding: 10px 20px;
-    cursor: pointer;
-    position: absolute; /* Position it relative to the large-box */
-    font-size: 36px;    /* Adjust the font size if needed */
-    float: right;
-    left: 0;
-    transform: translateY(-40%);
-    bottom: 0%;
-}
-
-.button-list{
-    margin-top: 60px;
-    display: flex;
-    position: relative;
-}
-
-.main-container {
-    position: relative;
-    border: 3px solid transparent;
-}
-
 .locations-container {
     /* existing styles if any */
     position: relative;
@@ -210,6 +62,70 @@
 /* If you don't want margin for the last box */
 .box:last-child {
     margin-bottom: 0;
+}
+
+.min-level {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px; /* or adjust to your preference */
+    background-color: #f9f9f9; /* or adjust to your preference */
+    padding: 3px;
+    border-radius: 3px;
+}
+
+.locations-container {
+    margin-top: 20px;
+    max-height: 400px;  /* or any height that fits your design */
+    width: 100%;  /* optional, adjust as needed */
+    position: relative;
+    z-index: 1; /* ensures it's above the vertical boxes */
+}
+
+/* This will be the main container that holds the image and text areas */
+.pokemon-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 3px solid transparent;
+ }
+ 
+ /* Style for the image */
+ .pokemon-image {
+    height: 40%;
+    width: auto;
+    position: relative;
+    margin-top: 15vh;
+    justify-items: center;
+    align-items: center;
+    display: block;
+ }
+ 
+ /* Styles for the text area */
+ .pokemon-name {
+    position: absolute;
+    top: 10px;  /* adjust as needed */
+    left: 10px; /* adjust as needed */
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 4px;
+ }
+ 
+ .pokemon-level {
+    position: absolute;
+    top: 10px;   /* adjust as needed */
+    right: 10px; /* adjust as needed */
+    background-color: lightblue;
+    padding: 5px;
+    border-radius: 4px;
+ }
+
+app-confirmation-popup {
+    position: absolute;
+    z-index: 1000;
 }
 
 .info-container {
@@ -274,4 +190,84 @@
     animation: 
         flashRedBorder 1s forwards, 
         shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.run-button {
+    background-color: #1976d2;
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    right: 0;
+    left: auto;  /* override the left positioning */
+    bottom: 0%;
+}
+
+.run-button:hover {
+    border: 3px solid gold;
+}
+
+.catch-button {
+    background-color: #1976d2;
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    right: 0;
+    left: 0%;  /* override the left positioning */
+    bottom: 0%;
+}
+
+.catch-button:hover {
+    border: 3px solid gold;
+}
+
+.catch-button-disabled {
+    background-color: grey;
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    right: 0;
+    left: 0%;  /* override the left positioning */
+    bottom: 0%;
+}
+
+.attack-button {
+    background-color: #1976d2;
+    width: 30%;
+    justify-content: center;
+    margin: 5px;
+    color: white; /* White text on the red button */
+    border-color: gold;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    position: absolute; /* Position it relative to the large-box */
+    font-size: 36px;    /* Adjust the font size if needed */
+    right: 0;
+    left: 35%;  /* override the left positioning */
+    bottom: 0%;
+}
+
+.attack-button:hover {
+    border: 3px solid gold;
 }

@@ -10,7 +10,6 @@ import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { HomeComponent } from './home/home.component';
 import { GymListComponent } from './components/gym-list/gym-list.component';
-import { MyPokemonComponent } from './components/my-pokemon/my-pokemon.component';
 import { LoginPopupComponent } from './components/login-popup/login-popup.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { PlayComponent } from './components/play/play.component';
@@ -38,7 +37,6 @@ import { MyPokemonListComponent } from './components/my-pokemon-list/my-pokemon-
     TopBarComponent,
     HomeComponent,
     GymListComponent,
-    MyPokemonComponent,
     LoginPopupComponent,
     LeaderboardComponent,
     PlayComponent,

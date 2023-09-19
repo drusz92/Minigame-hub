@@ -17,6 +17,9 @@
         <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Flareon')">Evolve</button>
         <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Vaporeon')">Evolve</button>
         <button class="evolve-button-jolteon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Jolteon')">Evolve</button>
+        <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Flareon-s')">Evolve</button>
+      <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Vaporeon-s')">Evolve</button>
+      <button class="evolve-button-jolteon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Jolteon-s')">Evolve</button>
     </div>
     <button class="evolve-button" *ngIf="canEvolve() && creature.name != 'Eevee'" (click)="evolve()">Evolve</button>
     <button class="release-button" (click)="releasePokemon()">Release</button>

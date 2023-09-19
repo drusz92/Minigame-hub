@@ -245,13 +245,13 @@ getEncounter() {
     ).subscribe(({ data, creatureData }) => {
       const creature = creatureData[0] ?? new Creature();
       this.creature = creature;
-      if (this.creature.currentHealth > (creature.currentHealth ?? 0) + 2) {
+      if (this.creature.currentHealth > (creature.currentHealth ?? 0) + 3) {
         this.critEvent.emit();
       }
       if (this.creature.id !== 0) {
         if (data && data.length > 0) {
           const encounterHealth = data[0].currentHealth; 
-          if (this.encounter.currentHealth > encounterHealth + 2) {
+          if (this.encounter.currentHealth > encounterHealth + 3) {
             this.critHit();
           }
           this.encounter.currentHealth = encounterHealth;

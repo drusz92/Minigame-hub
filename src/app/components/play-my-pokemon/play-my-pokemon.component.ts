@@ -1,8 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { EMPTY, catchError, finalize, switchMap, tap } from 'rxjs';
-import { Creature } from 'src/app/models/creature.model';
-import { CreatureService } from 'src/app/services/creature.service';
+import { Monster } from 'src/app/models/monster.model';
+import { MonsterService } from 'src/app/services/monster.service';
 import { EncounterService } from 'src/app/services/encounter.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -12,10 +12,17 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./play-my-pokemon.component.css']
 })
 export class PlayMyPokemonComponent implements OnInit {
-  creatureImagePath: string = '';
+  monsterImagePath: string = '';
   userId: string = "";
-  creature: Creature = new Creature();
+  maxStamina: number = 5;
+  monster: Monster = new Monster();
+  monsters: Monster[] = [];
+  pokemonCode: string = '';
   showConfirmationPopup: boolean = false;
+  showFreezePopup: boolean = false;
+  showGenerateMonsterPopup: boolean = false;
+  showUnFreezePopup: boolean = false;
+  showCombinePopup: boolean = false;
   isCritRed: boolean = false;
   isCritGold: boolean = false;
   
@@ -23,7 +30,7 @@ export class PlayMyPokemonComponent implements OnInit {
   @Output() onGeneratePokemon = new EventEmitter<void>();
   @Output() critEvent = new EventEmitter<boolean>()
 
-  constructor(private creatureService: CreatureService, private cookieService: CookieService, private userService: UserService,
+  constructor(private monsterService: MonsterService, private cookieService: CookieService, private userService: UserService,
     private encounterService: EncounterService) { 
   }
 
@@ -35,21 +42,20 @@ export class PlayMyPokemonComponent implements OnInit {
   }
 
   initializeData() {
-    this.userId = this.cookieService.get('userId');
-    
+    this.userId = this.cookieService.get('userId');   
     if (!this.userId) {
       this.setEmptyCreature();
       return;
     }
-  
-    this.creatureService.getCreature(this.userId).subscribe(
+    this.monsterService.getMonster(this.userId).subscribe(
       (data: any) => {
-        if (!data || data.length === 0) {          
+        this.monsters = data;
+        this.monster = data.find((item: { isActive: boolean; }) => item.isActive === true);
+        if (!this.monster) { 
           this.setEmptyCreature();
           this.flashGold();
-        } else {
-          this.creature = data[0];
-          this.creatureImagePath = this.getCreatureImage();
+        } else {     
+          this.monsterImagePath = this.getMonsterImage();
         }
       },
       (error: any) => {
@@ -59,64 +65,22 @@ export class PlayMyPokemonComponent implements OnInit {
     ); 
   }
   
-  private setEmptyCreature() {
-    this.creature = new Creature();
-    this.creatureImagePath = "";
+  setEmptyCreature() {
+    this.monster = new Monster();
+    this.monsterImagePath = "";
   }
 
-  evolve() {
-    this.creatureService.evolve(this.userId).pipe(
+  generateMonster() {
+    this.monsterService.generateMonster(this.userId, this.pokemonCode).pipe(
       tap((data: any) => {
         if (data && data.length > 0) {
-          this.creature = data[0];
-          this.creatureImagePath = this.getCreatureImage();
-        } else {
-          console.warn('No creature data received on evolve.');
-        }
-      }),
-      catchError((error: any) => {
-        console.error('Error evolving creature:', error);
-        return EMPTY;
-      }),
-      finalize(() => {
-        this.initializeData();
-      })
-    ).subscribe();
-  }
-
-  evolveEevee(eeveeValue: string) {
-    this.creatureService.evolveEevee(this.userId, eeveeValue).pipe(
-      tap((data: any) => {
-        if (data && data.length > 0) {
-          this.creature = data[0];
-          this.creatureImagePath = this.getCreatureImage();
-        } else {
-          console.warn('No creature data received on evolveEevee.');
-        }
-      }),
-      catchError((error: any) => {
-        console.error('Error evolving Eevee:', error);
-        return EMPTY;
-      }),
-      finalize(() => {
-        this.initializeData();
-      })
-    ).subscribe();
-  }
-
-  canEvolve(){
-    if (this.creature.evolvesAt != undefined){
-      return this.creature.level >= this.creature.evolvesAt
-    }
-    return false;
-  }
-
-  getPokemon() {
-    this.creatureService.getPokemon(this.userId).pipe(
-      tap((data: any) => {
-        if (data && data.length > 0) {
-          this.creature = data[0];
-          this.creatureImagePath = this.getCreatureImage();
+          this.monsters = data;
+          this.monster = data.find((item: { isActive: boolean; }) => item.isActive === true);         
+          if (!this.monster) {
+            this.setEmptyCreature();
+          }
+          this.monsterImagePath = this.getMonsterImage();
+          this.pokemonCode = '';
           this.emitEventsAndInitialize();
         } else {
           console.warn('No pokemon data received.');
@@ -139,13 +103,75 @@ export class PlayMyPokemonComponent implements OnInit {
     this.showConfirmationPopup = true;
   }
 
-  handleConfirm() {
-    this.creatureService.releasePokemon(this.userId).pipe(
-      switchMap(() => this.encounterService.run(this.userId)),
+  freezePokemon(){
+    this.showFreezePopup = true;
+  }
+
+  unfreezeMonster(){
+    this.showUnFreezePopup = true;
+  }
+
+  handleUnFreeze(imgUrl: string) {
+    if (imgUrl.includes('fused')){
+      const regex = /(\d+\.\d+)(?=\.png$)/;
+      let match = imgUrl.match(regex);
+      var id = match ? match[0] : ""
+    }
+    else{
+      const regex = /(\d+)(?=\.png$)/;
+      let match = imgUrl.match(regex);
+      var id = match ? match[0] : "";
+    }
+    this.monsterService.unFreezeMonster(this.userId, id).pipe(
       tap(() => {
-        this.onRelease.emit();
+        this.initializeData();
+        this.onGeneratePokemon.emit();
+        this.showUnFreezePopup = false;
+      }),
+      catchError((error: any) => {
+        console.error('Error:', error);
+        this.showUnFreezePopup = false;
+        return EMPTY;
+      })
+    ).subscribe();
+}
+
+combinePokemon(){
+  this.showCombinePopup = true;
+}
+
+handleCombine(imgUrl: string) {
+  if (imgUrl.includes('fused')){
+    const regex = /(\d+\.\d+)(?=\.png$)/;
+    let match = imgUrl.match(regex);
+    var id = match ? match[0] : ""
+  }
+  else{
+    const regex = /(\d+)(?=\.png$)/;
+    let match = imgUrl.match(regex);
+    var id = match ? match[0] : "";
+  }
+  this.monsterService.combineMonster(this.userId, id).pipe(
+    tap(() => {
+      this.initializeData();
+      this.onGeneratePokemon.emit();
+      this.showCombinePopup = false;
+    }),
+    catchError((error: any) => {
+      console.error('Error:', error);
+      this.showCombinePopup = false;
+      return EMPTY;
+    })
+  ).subscribe();
+}
+
+  handleConfirm() {
+    this.monsterService.releaseMonster(this.userId).pipe(
+      switchMap(() => this.encounterService.run(this.userId)),
+      tap(() => {   
         this.initializeData();
         this.showConfirmationPopup = false;
+        this.onRelease.emit();
       }),
       catchError((error: any) => {
         console.error('Error:', error);
@@ -159,8 +185,28 @@ export class PlayMyPokemonComponent implements OnInit {
     this.showConfirmationPopup = false;
   }
 
+  handleFreezeConfirm() {
+    this.monsterService.freezeMonster(this.userId).pipe(
+      switchMap(() => this.encounterService.run(this.userId)),
+      tap(() => {
+        this.onRelease.emit();
+        this.initializeData();
+        this.showFreezePopup = false;
+      }),
+      catchError((error: any) => {
+        console.error('Error:', error);
+        this.showFreezePopup = false;
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+  
+  handleFreezeDeny() {
+    this.showFreezePopup = false;
+  }
+
   getHealthPercentage(): number {
-    return (this.creature.currentHealth / this.creature.maxHealth) * 100;
+    return (this.monster.stamina / this.maxStamina) * 100;
 }
 
 critHit() {
@@ -177,8 +223,8 @@ flashGold() {
   }, 500);
 }
 
-getCreatureImage(){
-  return `assets/gifs/${this.creature.name.toLowerCase()}.gif`;
+getMonsterImage(){
+  return this.monster.url;
 }
 
 }

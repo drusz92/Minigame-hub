@@ -1,0 +1,24 @@
+export class Monster {
+    id: number = 0;
+    creatureName: string = "";
+    userId: string = "";
+    url: string = "";
+    strength: number = 0;
+    health: number = 0;
+    defense: number = 0;
+    speed: number = 0;
+    accuracy: number = 0;
+    stamina: number = 0;
+    years: number = 0;
+    months: number = 0;
+    weeks: number = 0;
+    isActive: boolean = false;
+    gym1: boolean = false;
+    gym2: boolean = false;
+    gym3: boolean = false;
+    gym4: boolean = false;
+    gym5: boolean = false;
+    gym6: boolean = false;
+    gym7: boolean = false;
+    gym8: boolean = false;
+}

@@ -1,9 +1,9 @@
 <h2 class="gym-title">Gyms:</h2>
 <div class="gym-container">
-    <div class="gym-box" [ngClass]="{'highlight-gym': canHighlight(gym, creature)}" [ngStyle]="{'background-color': gym.isComplete? 'darkgreen' : gym.minLevel > creature.level? 'grey' : '#1976d2'}" *ngFor="let gym of gyms" (click)="selectGym(gym)">
-      <div *ngIf="gym.minLevel > creature.level" class="level-requirement">
-        Requires level {{gym.minLevel}}
+  <div class="gym-box" [ngClass]="{'highlight-gym': gym.isAvailable}" [ngStyle]="{'background-color': gym.isComplete? 'darkgreen': gym.isAvailable ? '#1976d2' : 'grey'}" *ngFor="let gym of gyms" (click)="selectGym(gym)">
+    <div class="level-requirement">
+        {{gym.name}}
     </div>
-      <img [src]="gym.imagePath" class="gym-image">
-    </div>
+    <img [src]="gym.imagePath" class="gym-image">
+  </div>
 </div>

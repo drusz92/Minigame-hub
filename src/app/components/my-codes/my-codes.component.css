@@ -1,0 +1,45 @@
+.code {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px; /* To give some spacing between boxes */
+    position: relative;  /* To allow absolute positioning of child elements */
+    max-height: 50px; /* adjust based on your needs */
+    width: 250px;
+    margin: 5px;
+}
+
+.code-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Spacing between each code box */
+}
+
+.code-info {
+    /* You can add some styles for the container that holds creatureName and Code */
+}
+
+.code img {
+    max-height: 50px; /* adjust based on your needs */
+    max-width: 50px; /* adjust based on your needs */
+}
+
+.code .creature-name, .code .code-text {
+    position: absolute;
+    left: 10px;  /* Adjust this value to give some spacing from the left edge of the box */
+}
+
+.creature-name{
+    top: 5px;
+}
+
+.code-text{
+    top: 25px;
+}
+
+.code .code-text {
+    bottom: 10px;  /* Adjust this value to give some spacing from the bottom edge of the box */
+}

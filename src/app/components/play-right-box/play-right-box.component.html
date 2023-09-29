@@ -1,34 +1,90 @@
-<div class="pokemon-container" [ngClass]="{'crit-flash': isCrit}">
-    <div *ngIf="!encounterInProgress" class="locations-container">
-        <div [ngClass]="{'highlight-button': enabled(location)}" *ngFor="let location of locations" class="location-box" (click)="generateEncounter(location)">
-            <span class="min-level">{{ location.minLevel }} - {{location.maxLevel}}</span>
-            {{ location.name }}       
+<div class="pokemon-container">
+    <div *ngIf="locations" class="locations-container">
+        <div class="location-box" [ngStyle]="{'background-color': canRest ? '#1976d2' : 'grey'}" (click)="rest()">
+            Rest    
         </div>
-        <div class="vertical-boxes">
-            <div class="box" [style.backgroundColor]="isZoneLevel(1, 15) ? '#1976d2' : 'grey'" [style.border]="currentLocationName == 'location1' ? '3px solid gold' : 'none'" (click)="zone1()"><span class="zone-levels">1-15</span></div>
-            <div class="box" [style.backgroundColor]="isZoneLevel(12, 28) ? '#1976d2' : 'grey'" [style.border]="currentLocationName == 'location2' ? '3px solid gold' : 'none'" (click)="zone2()"><span class="zone-levels">12-28</span></div>
-            <div class="box" [style.backgroundColor]="isZoneLevel(26, 38) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location3' ? '3px solid gold' : 'none'" (click)="zone3()"><span class="zone-levels">26-38</span></div>
-            <div class="box" [style.backgroundColor]="isZoneLevel(36, 50) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location4' ? '3px solid gold' : 'none'" (click)="zone4()"><span class="zone-levels">36-50</span></div>
-            <div class="box" [style.backgroundColor]="isZoneLevel(50, 100) ? '#1976d2' : 'grey'" [style.border]="currentLocationName === 'location5' ? '3px solid gold' : 'none'" (click)="zone5()"><span class="zone-levels">50+</span></div>
+        <div class="location-box" [ngStyle]="{'background-color': canTrain ? '#1976d2' : 'grey'}" (click)="trainStrength()">
+            Train Strength     
+        </div>
+        <div class="location-box" [ngStyle]="{'background-color': canTrain ? '#1976d2' : 'grey'}" (click)="trainDefense()">
+            Train Defense 
+        </div>
+        <div class="location-box" [ngStyle]="{'background-color': canTrain ? '#1976d2' : 'grey'}" (click)="trainSpeed()">
+            Train Speed 
+        </div>
+        <div class="location-box" [ngStyle]="{'background-color': canTrain ? '#1976d2' : 'grey'}" (click)="trainAccuracy()">
+            Train Accuracy
+        </div>
+        <div class="location-box" [ngStyle]="{'background-color': canTrain ? '#1976d2' : 'grey'}" (click)="trainHealth()">
+            Train Health
         </div>
     </div>
-    <div *ngIf="encounterInProgress" class="pokemon-container">
-    <img [src]="creatureImagePath" class="pokemon-image">
-    <div class="info-container">
-            <div class="pokemon-name">{{ encounter.creatureName }}</div>
-            <div class="health-bar-container">
-                <div class="health-bar-current" [style.width]="getHealthPercentage() + '%'"></div>
+    <div *ngIf="strength" class="mini-game-container">
+        <div class="vertical-line">
+            <div class="target-section" [style.height.px]="targetHeight"></div>
+            <div 
+                class="dot" 
+                [style.top.%]="dotPosition"
+                [@moveDot]="{ value: moveDirection, params: { speed: dotSpeed } }">
             </div>
-            <div class="pokemon-level">Lvl. {{ encounter.creatureLevel }}</div>
         </div>
-        <div class="button-list">
-            <button *ngIf="canCatch && !encounter.isGym" class="catch-button" (click)="catch()">Catch (1)</button>
-            <button *ngIf="!canCatch && !encounter.isGym" class="catch-button-disabled">Failed</button>
-            <button class="attack-button" (click)="fight()">Attack</button>
-            <button *ngIf="!encounter.isGym" class="run-button" (click)="run()">Run</button>
+        <button class="checkPositionButton" (click)="checkPosition()">Stop</button>
+    </div>
+    <div *ngIf="defense" class="mini-game-container">
+        <div class="vertical-line">
+            <div class="target-section" [style.height.px]="targetHeight"></div>
+            <div 
+                class="dot" 
+                [style.top.%]="dotPosition"
+                [@moveDot]="{ value: moveDirection, params: { speed: dotSpeed } }">
+            </div>
         </div>
+        <button class="checkPositionButton" (click)="checkPosition()">Stop</button>
+    </div>
+    <div *ngIf="speed" class="mini-game-container">
+        <div class="vertical-line">
+            <div class="target-section" [style.height.px]="targetHeight"></div>
+            <div 
+                class="dot" 
+                [style.top.%]="dotPosition"
+                [@moveDot]="{ value: moveDirection, params: { speed: dotSpeed } }">
+            </div>
+        </div>
+        <button class="checkPositionButton" (click)="checkPosition()">Stop</button>
+    </div>
+    <div *ngIf="accuracy" class="mini-game-container">
+        <div class="vertical-line">
+            <div class="target-section" [style.height.px]="targetHeight"></div>
+            <div 
+                class="dot" 
+                [style.top.%]="dotPosition"
+                [@moveDot]="{ value: moveDirection, params: { speed: dotSpeed } }">
+            </div>
+        </div>
+        <button class="checkPositionButton" (click)="checkPosition()">Stop</button>
+    </div>
+    <div *ngIf="health" class="mini-game-container">
+        <div class="vertical-line">
+            <div class="target-section" [style.height.px]="targetHeight"></div>
+            <div 
+                class="dot" 
+                [style.top.%]="dotPosition"
+                [@moveDot]="{ value: moveDirection, params: { speed: dotSpeed } }">
+            </div>
+        </div>
+        <button class="checkPositionButton" (click)="checkPosition()">Stop</button>
     </div>
 </div>
-<app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Are you sure? This will replace your current Pokemon'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>
 <app-win-flash #winFlash></app-win-flash>
 <app-lose-flash #loseFlash></app-lose-flash>
+<div *ngIf="showOverlay" class="fade-overlay"></div>
+<app-message-popup 
+    [message]="oldMessage" 
+    [isVisible]="showOld" 
+    (closePopup)="handleClosePopup()">
+</app-message-popup>
+<app-message-popup 
+    [message]="retireMessage" 
+    [isVisible]="showRetire" 
+    (closePopup)="handleClosePopup()">
+</app-message-popup>

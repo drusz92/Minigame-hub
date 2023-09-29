@@ -18,7 +18,11 @@ import { PlayRightBoxComponent } from './components/play-right-box/play-right-bo
 import { ConfirmationPopupComponent } from './components/confirmation-popup/confirmation-popup.component';
 import { WinFlashComponent } from './components/win-flash/win-flash.component';
 import { LoseFlashComponent } from './components/lose-flash/lose-flash.component';
-import { MyPokemonListComponent } from './components/my-pokemon-list/my-pokemon-list.component';
+import { ImagePopupComponent } from './components/image-popup/image-popup.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MessagePopupComponent } from './components/message-popup/message-popup.component';
+import { MyCodesComponent } from './components/my-codes/my-codes.component';
+import { GymBattleComponent } from './components/gym-battle/gym-battle.component';
 
 @NgModule({
   imports: [
@@ -26,9 +30,10 @@ import { MyPokemonListComponent } from './components/my-pokemon-list/my-pokemon-
     ReactiveFormsModule,
     HttpClientModule,
     FormsModule,
+    BrowserAnimationsModule,
     RouterModule.forRoot([
       { path: '', component: PlayComponent },
-      { path: 'MyPokemon', component: MyPokemonListComponent },
+      { path: 'MyCodes', component: MyCodesComponent },
       { path: 'Leaderboard', component: LeaderboardComponent },
     ])
   ],
@@ -45,7 +50,10 @@ import { MyPokemonListComponent } from './components/my-pokemon-list/my-pokemon-
     ConfirmationPopupComponent,
     WinFlashComponent,
     LoseFlashComponent,
-    MyPokemonListComponent,
+    ImagePopupComponent,
+    MessagePopupComponent,
+    MyCodesComponent,
+    GymBattleComponent,
   ],
   providers: [
     CookieService

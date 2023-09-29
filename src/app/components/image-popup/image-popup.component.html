@@ -1,0 +1,8 @@
+<div class="popup-background">
+    <div class="popup-content">    
+      <div *ngFor="let img of images">
+        <img [src]="img" alt="Image" (click)="isFreeze? unFreeze(img) : combine(img)" />
+      </div>
+      <button class="closeButton" (click)="closePopup.emit()">Close</button>
+    </div>
+  </div>

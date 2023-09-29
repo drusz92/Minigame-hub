@@ -15,3 +15,4 @@
     </div>
   </div>
 <app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Challenge the ' + gymName + ' Gym?'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>
+<app-gym-battle *ngIf="showBattle" [myMonster]="myMonster" [bossMonster]="bossMonster"></app-gym-battle>

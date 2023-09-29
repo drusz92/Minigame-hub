@@ -1,27 +1,45 @@
-<div *ngIf="creature.id == 0" class="pokemon-container" [ngClass]="{'crit-flash-red': isCritRed, 'crit-flash-gold': isCritGold}">
+<div *ngIf="monster.id == 0" class="pokemon-container" [ngClass]="{'crit-flash-red': isCritRed, 'crit-flash-gold': isCritGold}">
     <div class="no-pokemon-content">
         You currently have no pokemon.
-        <button class="no-pokemon-button" (click)="getPokemon()">Get Free Pokemon</button>
+        <p>Enter any code you wish to generate your pokemon</p>
+        <input type="text" [(ngModel)]="pokemonCode" placeholder="Enter code" maxlength="16"/>
+        <button 
+            class="no-pokemon-button" 
+            (click)="generateMonster()"
+            [disabled]="!pokemonCode || pokemonCode.length < 1 || pokemonCode.length > 16">
+            Generate Pokemon
+        </button>
+        <button 
+            class="no-pokemon-button" 
+            (click)="unfreezeMonster()"
+            [disabled]="monsters.length < 1">
+            Withdraw Pokemon
+        </button>
     </div>
 </div>
-<div *ngIf="creature.id != 0" class="pokemon-container">
-    <img [src]="creatureImagePath" class="pokemon-image">
+<div *ngIf="monster.id != 0" class="pokemon-container">
+    <img [src]="monsterImagePath" class="pokemon-image">
     <div class="info-container">
-            <div class="pokemon-name">{{ creature.name }}</div>
+            <div class="pokemon-level">Stamina:</div>
+            <div class="pokemon-level years">Years: {{monster.years}}</div>
+            <div class="pokemon-level months">Months: {{monster.months}}</div>
+            <div class="pokemon-level weeks">Weeks: {{monster.weeks}}</div> 
+                
             <div class="health-bar-container">
                 <div class="health-bar-current" [style.width]="getHealthPercentage() + '%'"></div>
             </div>
-            <div class="pokemon-level">Lvl. {{ creature.level }}</div>
+            <div class="pokemon-name">{{ monster.creatureName }}</div>
+            <div class="pokemon-level strength">Strength: {{monster.strength}}</div>
+            <div class="pokemon-level defense">Defense: {{monster.defense}}</div>
+            <div class="pokemon-level speed">Speed: {{monster.speed}}</div>
+            <div class="pokemon-level accuracy">Accuracy: {{monster.accuracy}}</div>
+            <div class="pokemon-level health">Health: {{monster.health}}</div>   
         </div> 
-    <div class="evolve-buttons-container">
-        <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Flareon')">Evolve</button>
-        <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Vaporeon')">Evolve</button>
-        <button class="evolve-button-jolteon" *ngIf="canEvolve() && creature.name == 'Eevee'" (click)="evolveEevee('Jolteon')">Evolve</button>
-        <button class="evolve-button-flareon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Flareon-s')">Evolve</button>
-      <button class="evolve-button-vaporeon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Vaporeon-s')">Evolve</button>
-      <button class="evolve-button-jolteon" *ngIf="canEvolve() && creature.name == 'Eevee-s'" (click)="evolveEevee('Jolteon-s')">Evolve</button>
-    </div>
-    <button class="evolve-button" *ngIf="canEvolve() && creature.name != 'Eevee'" (click)="evolve()">Evolve</button>
+    <button class="freeze-button" [disabled]="monsters.length > 5" (click)="freezePokemon()">Deposit</button>
+    <button class="combine-button" [disabled]="monsters.length  < 2" (click)="combinePokemon()">Combine</button>
     <button class="release-button" (click)="releasePokemon()">Release</button>
 </div>
+<app-image-popup *ngIf="showUnFreezePopup" [isFreeze]="true" [monsters]="monsters" (unFreezeEvent)="handleUnFreeze($event)" (closePopup)="showUnFreezePopup = false"></app-image-popup>
+<app-image-popup *ngIf="showCombinePopup" [isFreeze]="false" [monsters]="monsters" (combineEvent)="handleCombine($event)" (closePopup)="showCombinePopup = false"></app-image-popup>
 <app-confirmation-popup *ngIf="showConfirmationPopup" [message]="'Are you sure you want to release your Pokemon?'" (onConfirm)="handleConfirm()" (onDeny)="handleDeny()"></app-confirmation-popup>
+<app-confirmation-popup *ngIf="showFreezePopup" [message]="'Are you sure you want to deposit your Pokemon to the PC?'" (onConfirm)="handleFreezeConfirm()" (onDeny)="handleFreezeDeny()"></app-confirmation-popup>

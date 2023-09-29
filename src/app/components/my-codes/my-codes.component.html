@@ -1,0 +1,11 @@
+<div class="code-container">
+    <div *ngFor="let code of codes">
+        <div class="code">
+            <div class="code-info">
+                <div class="creature-name">Pokemon: {{code.creatureName}}</div>
+                <div class="code-text">Code: {{code.text}}</div>
+            </div>
+            <img src="{{code.url}}">
+        </div>  
+    </div>
+</div>

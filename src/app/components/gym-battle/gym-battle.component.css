@@ -1,0 +1,27 @@
+.popup-container {
+    position: absolute;
+    overflow: hidden;
+    top: 0%;
+    left: 5%;
+    width: 90%;
+    height: 100%;
+    z-index: 3000;
+    border: 2px black solid;
+    background-color: white;
+  }
+  
+  .left-image {
+    position: relative;
+    top: 45%;
+    left: 20%;  /* Adjust as necessary */
+    height: 30%;
+    width: 30%;
+  }
+  
+  .right-image {
+    position: relative;
+    top: 45%;
+    right: -20%;  /* Adjust as necessary */
+    height: 30%;
+    width: 30%;
+  }

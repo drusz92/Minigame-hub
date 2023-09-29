@@ -18,7 +18,6 @@
     font-family: 'Roboto', Arial, sans-serif;
     background-color: #1976d2;
     border-radius: 8px;
-    cursor: pointer;
     position: relative;
 }
 
@@ -37,6 +36,7 @@
 .highlight-gym:hover {
     transform: scale(1.05);
     border: 3px solid gold;
+    cursor:pointer;
 }
 
 /* Style for the image */

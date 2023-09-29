@@ -3,8 +3,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { WinService } from 'src/app/services/win.service';
 import { Subscription, map, switchMap, tap } from 'rxjs';
 import { GymService } from 'src/app/services/gym.service';
-import { CreatureService } from 'src/app/services/creature.service';
-import { Creature } from 'src/app/models/creature.model';
+import { MonsterService } from 'src/app/services/monster.service';
+import { Monster } from 'src/app/models/monster.model';
 import { Gym } from 'src/app/models/gym.model';
 
 @Component({
@@ -15,10 +15,10 @@ import { Gym } from 'src/app/models/gym.model';
 export class GymListComponent implements OnInit, OnDestroy {
   gyms: any[] = [];
   userId: string = "";
-  creature: Creature = new Creature();
+  monster: Monster = new Monster();
   private subscriptions: Subscription[] = [];
 
-  constructor(private cookieService: CookieService, private winService: WinService, private gymService: GymService, private creatureService: CreatureService) {}
+  constructor(private cookieService: CookieService, private winService: WinService, private gymService: GymService, private monsterService: MonsterService) {}
 
   @Output() gymSelected = new EventEmitter<any>();
   
@@ -35,14 +35,17 @@ export class GymListComponent implements OnInit, OnDestroy {
   
     // Guard clause: If there's no userId, exit early.
     if (!this.userId) {
-      this.creature = new Creature();
+      this.monster = new Monster();
       return;
     }
   
-    this.creatureService.getCreature(this.userId)
+    this.monsterService.getMonster(this.userId)
       .pipe(
         tap((data: any) => {
-          this.creature = data.length ? data[0] : new Creature();
+          this.monster = data.find((item: { isActive: boolean; }) => item.isActive === true);    
+          if (!this.monster) {
+            this.monster = new Monster();
+          }
         }),
         switchMap(async () => this.loadGyms()) // Chain this call, it's assumed `loadGyms` returns an observable.
       )
@@ -61,15 +64,19 @@ export class GymListComponent implements OnInit, OnDestroy {
   loadGyms() {
     this.gymService.getGyms(this.userId)
       .pipe(
-        map((gyms: Gym[]) => gyms.map(gym => ({
-          ...gym,
-          imagePath: `assets/${gym.name.toLowerCase()}.png`,
-          minLevel: this.setMinLevel(gym.name.toLowerCase())
-        })))
+        map((gyms: Gym[], index: number) => gyms.map((gym, idx) => {
+          const gymNum = `gym${idx + 1}` as keyof typeof this.monster;
+          return {
+            ...gym,
+            imagePath: `assets/${gym.name.toLowerCase()}.png`,
+            isComplete: this.monster[gymNum]
+          };
+        }))
       )
       .subscribe(
         (processedGyms: Gym[]) => {
-          this.gyms = processedGyms;
+          this.gyms = processedGyms;  
+          this.setGymAvailability();  
         },
         (error: any) => {
           console.error('Error fetching gyms:', error);
@@ -77,31 +84,8 @@ export class GymListComponent implements OnInit, OnDestroy {
       );
   }
 
-  setMinLevel(name: string) {
-    switch (name) {
-        case 'pewter':
-          return 12;
-        case 'cerulean':
-          return 18;
-        case 'vermilion':
-          return 21;
-        case 'celadon':
-          return 24;
-        case 'fuchsia':
-          return 35;
-        case 'saffron':
-          return 39;
-        case 'cinnabar':
-          return 42;
-        case 'viridian':
-          return 45;
-        default:
-            return 0;
-    }
-}
-
   selectGym(gym: any) {
-    if (gym.isComplete || gym.minLevel > this.creature.level){
+    if (gym.isComplete || gym.isAvailable == undefined || gym.isAvailable == false){
       return;
     }
     window.scrollTo(0, 0);
@@ -111,7 +95,18 @@ export class GymListComponent implements OnInit, OnDestroy {
     this.winService.announceGymListReload();
   }
 
-  canHighlight(gym: any, creature: Creature): boolean {
-    return gym.minLevel <= creature.level && !gym.isComplete;
+  setGymAvailability() {
+    let previousGymComplete = true;
+    for (const gym of this.gyms) {
+        if (!gym.isComplete) {
+            gym.isAvailable = true;
+            return
+        } else {
+            gym.isAvailable = false;
+        }
+        if (gym.isComplete !== 1) {
+            previousGymComplete = false;
+        }
+    }
 }
 }

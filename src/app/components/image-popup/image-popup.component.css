@@ -1,0 +1,38 @@
+.popup-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    position: relative; 
+    left: -20%; 
+    top: -10%;
+    text-align-last: center;
+  }
+
+  .popup-content img {
+    cursor: pointer;
+    width: 100px;
+    height: auto;
+}
+
+    .popup-content img:hover {
+    cursor: pointer;
+    border: 2px solid gold;
+}
+
+.closeButton{
+    margin: 5px;
+    width: 100px;
+    justify-content: center;
+}

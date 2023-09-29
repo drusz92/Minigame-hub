@@ -1,342 +1,357 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Creature } from 'src/app/models/creature.model';
-import { CreatureService } from 'src/app/services/creature.service';
-import { locations1 } from './locations1';
-import { locations2 } from './locations2';
-import { locations3 } from './locations3';
-import { locations4 } from './locations4';
-import { locations5 } from './locations5';
-import { EncounterService } from 'src/app/services/encounter.service';
-import { WinService } from 'src/app/services/win.service';
+import { Monster } from 'src/app/models/monster.model';
+import { MonsterService } from 'src/app/services/monster.service';
 import { WinFlashComponent } from '../win-flash/win-flash.component';
 import { LoseFlashComponent } from '../lose-flash/lose-flash.component';
-import { EMPTY, Observable, Subject, catchError, filter, finalize, map, of, switchMap, takeUntil, tap, throwError } from 'rxjs';
-import { Encounter } from 'src/app/models/encounter.model';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 
 @Component({
   selector: 'app-play-right-box',
   templateUrl: './play-right-box.component.html',
-  styleUrls: ['./play-right-box.component.css']
+  styleUrls: ['./play-right-box.component.css'],
+  animations: [
+    trigger('moveDot', [
+        state('up', style({
+            top: '0%'
+        })),
+        state('down', style({
+            top: '98%' 
+        })),
+        transition('* <=> *', animate('{{speed}}ms linear'))
+    ])
+]
 })
 export class PlayRightBoxComponent implements OnInit {
   userId: string = "";
-  creature: Creature = new Creature();
-  creatureImagePath: string = '';
-  locations: any = [];
-  currentLocationName: string = 'location1';
-  encounterInProgress: boolean = false;
-  encounter: any = {};
-  canCatch: boolean = false;
-  isCrit = false;
-  showConfirmationPopup: boolean = false;
-  private destroyed$ = new Subject<void>();
+  monster: Monster = new Monster();
+  canTrain: boolean = false;
+  canRest: boolean = false;
+  locations: boolean = true;
+  strength: boolean = false;
+  defense: boolean = false;
+  speed: boolean = false;
+  accuracy: boolean = false;
+  health: boolean = false;
+  showOverlay: boolean = false;
+  dotPosition = 0;
+  moveDirection: 'up' | 'down' = 'down';
+  strengthInterval: any;
+  targetHeight: number = 40;
+  targetStart = 50 - (this.targetHeight / 2);  // 50% is the middle, so we subtract half the height to get the start
+  targetEnd = 50 + (this.targetHeight / 2);    // Similarly, add half the height to get the end
+  dotSpeed: number = 2000; 
+  animationStartTime = Date.now();
+  oldMessage: string = '';
+  retireMessage: string = '';
+  showOld: boolean = false;
+  showRetire: boolean = false;
 
   @Output() onCatchConfirmation = new EventEmitter<void>();
-  @Output() critEvent = new EventEmitter<void>();
   @ViewChild('winFlash') winFlash!: WinFlashComponent;
   @ViewChild('loseFlash') loseFlash!: LoseFlashComponent;
   
-  constructor(private cookieService: CookieService, private creatureService: CreatureService, private encounterService: EncounterService,
-    private winService: WinService) { }
+  constructor(private monsterService: MonsterService, private cookieService: CookieService) { }
 
   ngOnInit(): void {
     this.initialize();
   }
 
   initialize() {
-    this.currentLocationName = this.cookieService.get('currentLocation') ?? 'location1';
-    this.locations = this.getCurrentLocation(this.currentLocationName);
     this.userId = this.cookieService.get('userId');
-    if (this.encounter.id == undefined) this.creatureImagePath = '';
-    if (this.userId == ""){
-      this.creature = new Creature();    
-    }
-    else {
-      this.getEncounter();
-    }
-  }
-
-  getCurrentLocation(location: string){
-    if (location == "location1"){
-      return locations1;
-    }
-    else if (location == "location2"){
-      return locations2
-    }
-    else if (location == "location3"){
-      return locations3
-    }
-    else if (location == "location4"){
-      return locations4
-    }
-    else if (location == "location5"){
-      return locations5
-    }
-    else{
-      return locations1
-    }
-  }
-
-getEncounter() {
-  this.encounterService.getEncounter(this.userId)
-    .pipe(
-      tap((data: any) => {
-        if (data.length === 0) {
-          this.encounterInProgress = false;
-          this.encounter = {};         
-        } else {
-          this.encounter = data[0];
-          this.encounterInProgress = true;        
-          this.canCatch = this.encounter.canCatch;
+    this.locations = true;
+    this.strength = false;
+    this.defense = false;
+    this.speed = false;
+    this.accuracy = false;
+    this.health = false;
+    this.monsterService.getMonster(this.userId).subscribe(
+      (data: any) => {
+        this.monster = data.find((item: { isActive: boolean; }) => item.isActive === true);
+        if (!this.monster) { 
+          this.setEmptyCreature();
+          this.canRest = false;
+          this.canTrain = false;
+        } else {     
+          this.canTrain = true;
+          this.canRest = this.monster.stamina < 5;
+          if (this.monster.years == 3 && this.monster.months == 0 && this.monster.weeks == 0){
+            this.showOldPopup();
+          }
+          if (this.monster.years >= 3 && this.monster.months >= 5){
+            if (Math.random() < 0.25) {
+              this.showRetirePopup();
+              this.retirePokemon();
+            } 
+          }
         }
-      }),
-      switchMap(() => this.getCreature())
-    )
-    .subscribe(
-      (creature: Creature) => {
-        this.creature = creature;
       },
       (error: any) => {
-        console.error('Error:', error);
+        console.error('Error fetching creature:', error);
+        this.setEmptyCreature();
       }
+    ); 
+  }
+
+  toggleDirection() {
+    if (this.moveDirection === 'down') {
+      this.dotPosition = 98;  // 98% from the top
+      this.moveDirection = 'up';
+  } else {
+      this.dotPosition = 0;   // Reset to top
+      this.moveDirection = 'down';
+  }
+}
+
+get animationParams() {
+  return { speed: this.dotSpeed };
+}
+
+checkPosition() {
+  const elapsedTime = Date.now() - this.animationStartTime;
+  const totalDuration = this.dotSpeed; // The total duration of one cycle of the animation.
+
+  // Determine how far along the animation is as a percentage of the total duration.
+  const animationProgress = (elapsedTime % totalDuration) / totalDuration;
+
+  if (this.moveDirection === 'down') {
+      this.dotPosition = animationProgress * 98; // 98% is the max value.
+  } else {
+      this.dotPosition = 98 - (animationProgress * 98);
+  }
+
+  if (this.dotPosition > this.targetStart && this.dotPosition < this.targetEnd) {
+      this.winFlash.onWinEvent();
+      this.successfulTraining();
+  } else {
+      this.loseFlash.onLoseEvent();
+      this.unsuccessfulTraining();
+  }
+}
+
+  setEmptyCreature() {
+    this.monster = new Monster();
+  }
+
+  rest(){
+    if (this.canRest){    
+      this.monsterService.rest(this.userId, this.monster.id).subscribe(
+        (data: any) => {
+          this.showOverlay = true;
+                setTimeout(() => {            
+                    this.onCatchConfirmation.emit();
+                    this.initialize();
+                    this.showOverlay = false;
+                }, 1000); 
+        },
+        (error: any) => {
+          console.error('Error resting:', error);
+          this.initialize();
+        }
+      );     
+    }
+  }
+
+  trainStrength(){
+    if (this.canTrain){    
+      var speed = this.monster.stamina == 0 ? 0.5 : this.monster.stamina;
+      this.setDotSpeed(400 * speed);  
+      this.targetStart = 40;
+      this.targetEnd = 56.66;
+      this.animationStartTime = Date.now();
+      this.strength = true;  
+      this.locations = false;
+      if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+      }
+      this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+      }, this.dotSpeed);
+    }
+}
+
+  trainDefense(){
+    if (this.canTrain){
+      var speed = this.monster.stamina == 0 ? 0.5 : this.monster.stamina;
+      this.setDotSpeed(400 * speed);  
+      this.targetStart = 40;
+      this.targetEnd = 56.66;
+      this.animationStartTime = Date.now();
+      this.defense = true;
+      this.locations = false;
+      if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+      }
+      this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+      }, this.dotSpeed);
+    }
+  }
+
+  trainSpeed(){
+    if (this.canTrain){
+      var speed = this.monster.stamina == 0 ? 0.5 : this.monster.stamina;
+      this.setDotSpeed(400 * speed);  
+      this.targetStart = 40;
+      this.targetEnd = 56.66;
+      this.animationStartTime = Date.now();
+      this.speed = true;
+      this.locations = false;
+      if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+      }
+      this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+      }, this.dotSpeed);
+    }
+  }
+
+  trainAccuracy(){
+    if (this.canTrain){
+      var speed = this.monster.stamina == 0 ? 0.5 : this.monster.stamina;
+      this.setDotSpeed(400 * speed);  
+      this.targetStart = 40;
+      this.targetEnd = 56.66;
+      this.animationStartTime = Date.now();
+      this.accuracy = true;
+      this.locations = false;
+      if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+      }
+      this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+      }, this.dotSpeed);
+    }
+  }
+
+  trainHealth(){
+    if (this.canTrain){
+      var speed = this.monster.stamina == 0 ? 0.5 : this.monster.stamina;
+      this.setDotSpeed(400 * speed);  
+      this.targetStart = 40;
+      this.targetEnd = 56.66;
+      this.animationStartTime = Date.now();
+      this.health = true;
+      this.locations = false;
+      if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+      }
+      this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+      }, this.dotSpeed);
+    }
+  }
+
+  successfulTraining() {
+    let trainingType: 'strength' | 'defense' | 'speed' | 'accuracy' | 'health' | undefined = undefined;
+    if (this.strength) {
+        trainingType = 'strength';
+    } else if (this.defense) {
+        trainingType = 'defense';
+    } else if (this.speed) {
+      trainingType = 'speed';
+    } else if (this.accuracy) {
+      trainingType = 'accuracy';
+    } else if (this.health) {
+      trainingType = 'health';
+    } 
+    if (trainingType) {
+        this.trainMonster(trainingType);
+    } else {
+        console.error('Unknown training type encountered.');
+    }
+}
+
+trainMonster(type: 'strength' | 'defense' | 'speed' | 'accuracy' | 'health') {
+    let trainingObservable;
+    switch (type) {
+        case 'strength':
+            trainingObservable = this.monsterService.trainStrength(this.userId, this.monster.id);
+            break;
+        case 'defense':
+            trainingObservable = this.monsterService.trainDefense(this.userId, this.monster.id);
+            break;
+        case 'speed':
+           trainingObservable = this.monsterService.trainSpeed(this.userId, this.monster.id);
+            break;
+        case 'accuracy':
+           trainingObservable = this.monsterService.trainAccuracy(this.userId, this.monster.id);
+           break;
+        case 'health':
+           trainingObservable = this.monsterService.trainHealth(this.userId, this.monster.id);
+           break;
+        default:
+            console.error('Invalid training type:', type);
+            return;
+    }
+    trainingObservable.subscribe(
+        (data: any) => {
+            this.initialize();
+            this.onCatchConfirmation.emit();
+        },
+        (error: any) => {
+            console.error(`Error training ${type}:`, error);
+            this.initialize();
+        }
     );
 }
 
-  getCreature(): Observable<Creature> {
-    return this.creatureService.getCreature(this.userId).pipe(
-      map((data: any) => {
-        if (data.length === 0) {
-          return new Creature();
-        } else {
-          const creature = data[0];
-          if (this.encounter.creatureName != undefined) {
-            this.creatureImagePath = this.getEncounterImage();
-          }
-          return creature;
-        }
-      }),
-      catchError(error => {
-        console.error('Error fetching creature:', error);
-        return of(new Creature()); 
-      })
-    );
-  }
-
-  enabled(encounter: any){
-    return this.creature.level >= encounter.minLevel && this.creature.level <=  encounter.maxLevel
-  }
-
-  isZoneLevel(minLevel: number, maxLevel: number){
-    return this.creature.level >= minLevel && this.creature.level <= maxLevel
-  }
-
-  generateEncounter(encounter: any) {
-    if (!this.enabled(encounter)) {
-      return;  // Simply exit the function if the encounter isn't enabled
-    }
-  
-    this.encounterService.generateEncounter(this.userId, this.creature.level, encounter.name, false).subscribe(
-      (data: any) => {
-        this.encounterInProgress = true;
-        this.encounter = data[0]; 
-        this.initialize();    
-      },
-      (error: any) => {
-        console.error('Error generating encounter:', error);
-      }
-    );
-  }
-  
-  generateGymEncounter(gymName: string) {
-    this.encounterService.generateGymEncounter(this.userId, gymName, true).subscribe(
-      (data: any) => {
-        this.encounterInProgress = true;
-        this.encounter = data[0]; 
-        this.initialize();    
-      },
-      (error: any) => {
-        console.error('Error generating gym encounter:', error);
-      }
-    );
-  }
-
-  run() {
-    this.encounterService.run(this.userId).pipe(
-      catchError(error => {
-        console.error('Error running encounter:', error);
-        return throwError(error); 
-      })
-    ).subscribe(
+  unsuccessfulTraining(){
+    this.monsterService.failTraining(this.userId, this.monster.id).subscribe(
       (data: any) => {
         this.initialize();
         this.onCatchConfirmation.emit();
-      }
-    );   
-  }
-
-  catch(){
-    this.showConfirmationPopup = true;
-  }
-
-  handleConfirm() {
-    let encounterObservable: Observable<any>;  
-    if (this.attemptCatch()) {
-      encounterObservable = this.encounterService.successfulCatch(this.userId);
-    } else {
-      encounterObservable = this.encounterService.failedCatch(this.userId);
+    },
+    (error: any) => {
+        console.error(`Error training fail:`, error);
+        this.initialize();
     }
-    encounterObservable.pipe(
-      finalize(() => {
+    );
+  }
+
+  setDotSpeed(newSpeed: number) {
+    clearInterval(this.strengthInterval);
+    this.dotSpeed = newSpeed;
+
+    this.strengthInterval = setInterval(() => {
+        this.toggleDirection();
+    }, this.dotSpeed);
+}
+
+  showOldPopup(){
+    this.oldMessage = this.monster.creatureName + ' is getting older. They are now 3 years old today! You might want to think about '
+      + 'retiring them to the PC before you lose them.';
+    this.showOld = true;
+  }
+
+  showRetirePopup(){
+    this.retireMessage = 'Unfortunately ' + this.monster.creatureName + ' passed away today. They will be dearly missed but you may continue with a new Pokemon.';
+    this.showRetire = true;
+  }
+
+  retirePokemon(){
+    this.monsterService.retire(this.userId, this.monster.id).subscribe(
+      (data: any) => {
+        this.initialize();
         this.onCatchConfirmation.emit();
-        this.showConfirmationPopup = false;
-      }),
-      catchError(error => {
-        console.error('Error processing catch:', error);
-        return EMPTY; // This prevents the subsequent subscribe logic from running in case of an error.
-      })
-    ).subscribe(data => {
-      this.initialize();
-      if (this.attemptCatch()) {
-        this.onCatchConfirmation.emit();
-      }
-    });
-  }
-
-  attemptCatch(): boolean {
-    const healthPercentage = this.encounter.currentHealth / this.encounter.maxHealth;
-    let maxRate: number;
-    let minRate: number;
-    if (this.encounter.creatureLevel < 10) {
-        maxRate = 0.95;
-        minRate = 0.50;
-    } else if (this.encounter.creatureLevel < 30) {
-        maxRate = 0.90;
-        minRate = 0.40;
-    } else if (this.encounter.creatureLevel < 50) {
-        maxRate = 0.80;
-        minRate = 0.20;
-    } else {
-        maxRate = 0.70;
-        minRate = 0.10;
+    },
+    (error: any) => {
+        console.error(`Error training fail:`, error);
+        this.initialize();
     }
-    const adjustedRate = maxRate - (maxRate - minRate) * healthPercentage;
-    return Math.random() < adjustedRate;
-}
-  
-  handleDeny() {
-    this.showConfirmationPopup = false;
+    );
   }
 
-  fight() {
-    this.encounterService.fight(this.userId).pipe(
-      switchMap((data: any) => {
-        return this.creatureService.getCreature(this.userId).pipe(
-          map((creatureData: any) => {
-            return { data, creatureData };
-          })
-        );
-      }),
-      catchError(error => {
-        console.error('Error processing fight:', error);
-        return EMPTY;
-      })
-    ).subscribe(({ data, creatureData }) => {
-      const creature = creatureData[0] ?? new Creature();
-      this.creature = creature;
-      if (this.creature.currentHealth > (creature.currentHealth ?? 0) + 3) {
-        this.critEvent.emit();
-      }
-      if (this.creature.id !== 0) {
-        if (data && data.length > 0) {
-          const encounterHealth = data[0].currentHealth; 
-          if (this.encounter.currentHealth > encounterHealth + 3) {
-            this.critHit();
-          }
-          this.encounter.currentHealth = encounterHealth;
-          this.encounter.maxHealth = data[0].maxHealth;
-        } else {
-          this.winFlash.onWinEvent();
-          this.winService.announceGymListReload();
-        }
-      } else {
-        this.loseFlash.onLoseEvent();
-      }
-      this.initialize();
-      this.onCatchConfirmation.emit();
-    });
-  }
-
-  zone1(){
-    if (!this.isZoneLevel(1, 15)){
-      return;
-    }
-    this.currentLocationName = 'location1';
-    this.cookieService.delete('currentLocation');
-    this.cookieService.set('currentLocation', this.currentLocationName, 365);
-    this.locations = locations1;
-  }
-
-  zone2(){
-    if (!this.isZoneLevel(12, 28)){
-      return;
-    }
-    this.currentLocationName = 'location2';
-    this.cookieService.delete('currentLocation');
-    this.cookieService.set('currentLocation', this.currentLocationName, 365);
-    this.locations = locations2;
-  }
-
-  zone3(){
-    if (!this.isZoneLevel(26, 38)){
-      return;
-    }
-    this.currentLocationName = 'location3';
-    this.cookieService.delete('currentLocation');
-    this.cookieService.set('currentLocation', this.currentLocationName, 365);
-    this.locations = locations3;
-  }
-
-  zone4(){
-    if (!this.isZoneLevel(36, 50)){
-      return;
-    }
-    this.currentLocationName = 'location4';
-    this.cookieService.delete('currentLocation');
-    this.cookieService.set('currentLocation', this.currentLocationName, 365);
-    this.locations = locations4;
-  }
-
-  zone5(){
-    if (!this.isZoneLevel(50, 100)){
-      return;
-    }
-    this.currentLocationName = 'location5';
-    this.cookieService.delete('currentLocation');
-    this.cookieService.set('currentLocation', this.currentLocationName, 365);
-    this.locations = locations5;
-  }
-
-  getHealthPercentage(): number {
-    return (this.encounter.currentHealth / this.encounter.maxHealth) * 100;
+handleClosePopup() {
+    this.showOld = false;
+    this.showRetire = false;
 }
 
-critHit() {
-  this.isCrit = true;
-  // If you want to remove the crit flash after some time, reset the flag:
-  setTimeout(() => {
-      this.isCrit = false;
-  }, 500); // 500ms matches the duration of the flash animation.
-}
-
-ngOnDestroy() {
-  this.destroyed$.next();
-  this.destroyed$.complete();
-}
-
-getEncounterImage(){
-  return `assets/gifs/${this.encounter.creatureName.toLowerCase()}.gif`;
-}
+  ngOnDestroy() {
+    if (this.strengthInterval) {
+        clearInterval(this.strengthInterval);
+    }
+  } 
 
 }
